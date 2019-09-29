@@ -3,3 +3,5 @@ spring:
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/books}
     username: ${DATABASE_USERNAME:julia}
     password: ${DATABASE_PASSWORD:}
+books:
+  origin: http://localhost:4200
