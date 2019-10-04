@@ -4,4 +4,6 @@ spring:
     username: ${DATABASE_USERNAME:julia}
     password: ${DATABASE_PASSWORD:}
 books:
-  origin: http://localhost:4200
+  origin:
+    user: http://localhost:4200
+    admin: http://localhost:4201
