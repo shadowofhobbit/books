@@ -1,5 +1,6 @@
-package julia.books.domain.accounts;
+package julia.books.security;
 
+import julia.books.domain.accounts.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,11 +9,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserService implements UserDetailsService {
+public class UserDetailsServiceImpl implements UserDetailsService {
     private AccountRepository accountRepository;
 
     @Autowired
-    public UserService(AccountRepository accountRepository) {
+    public UserDetailsServiceImpl(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
     }
 
@@ -25,4 +26,5 @@ public class UserService implements UserDetailsService {
                 .authorities(account.getRole())
                 .build();
     }
+
 }

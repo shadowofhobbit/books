@@ -1,11 +1,12 @@
 package julia.books.security;
 
-import julia.books.domain.accounts.UserService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -21,12 +22,12 @@ import java.io.IOException;
 public class TokenFilter extends OncePerRequestFilter {
     private static final String HEADER_PREFIX = "Bearer ";
     private static final String HEADER_NAME = "Authorization";
-    private final UserService userService;
+    private final UserDetailsService userDetailsService;
     private final TokenService tokenService;
 
     @Autowired
-    public TokenFilter(UserService userService, TokenService tokenService) {
-        this.userService = userService;
+    public TokenFilter(@Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService, TokenService tokenService) {
+        this.userDetailsService = userDetailsService;
         this.tokenService = tokenService;
     }
 
@@ -39,7 +40,7 @@ public class TokenFilter extends OncePerRequestFilter {
             String token = authHeader.substring(HEADER_PREFIX.length());
             try {
                 var username = tokenService.getUsernameFromToken(token);
-                UserDetails userDetails = this.userService.loadUserByUsername(username);
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
                 authentication = new UsernamePasswordAuthenticationToken(userDetails,
                         null,
                         userDetails.getAuthorities());

@@ -1,5 +1,8 @@
-package julia.books.domain.accounts;
+package julia.books.security;
 
+import julia.books.domain.accounts.AccountEntity;
+import julia.books.domain.accounts.AccountRepository;
+import julia.books.domain.accounts.AccountRole;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,32 +20,32 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
-public class UserServiceTest {
+public class UserDetailsServiceImplTest {
     @Mock
     private AccountRepository accountRepository;
 
-    private UserService userService;
+    private UserDetailsServiceImpl userDetailsService;
 
     @Before
     public void setUp() {
-        userService = new UserService(accountRepository);
+        userDetailsService = new UserDetailsServiceImpl(accountRepository);
     }
 
     @Test(expected = UsernameNotFoundException.class)
     public void loadUserByUsernameNoUser() {
         when(accountRepository.findByUsername(anyString())).thenReturn(Optional.empty());
-        userService.loadUserByUsername("test");
+        userDetailsService.loadUserByUsername("test");
     }
 
     @Test
     public void loadUserByUsernameSuccessfully() {
-        var account = new Account();
+        var account = new AccountEntity();
         account.setUsername("test");
         account.setId(ThreadLocalRandom.current().nextInt());
         account.setPasswordHash(UUID.randomUUID().toString());
         account.setRole(AccountRole.USER);
         when(accountRepository.findByUsername(anyString())).thenReturn(Optional.of(account));
-        var userDetails = userService.loadUserByUsername("test");
+        var userDetails = userDetailsService.loadUserByUsername("test");
         assertEquals(userDetails.getUsername(), account.getUsername());
         assertEquals(userDetails.getPassword(), account.getPasswordHash());
         assertTrue(userDetails.getAuthorities().contains(account.getRole()));

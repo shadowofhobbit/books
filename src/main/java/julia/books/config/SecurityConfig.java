@@ -1,17 +1,20 @@
 package julia.books.config;
 
-import julia.books.domain.accounts.UserService;
 import julia.books.security.TokenFilter;
+import julia.books.security.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -25,16 +28,17 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${books.origin.user}")
     private String userOrigin;
     @Value("${books.origin.admin}")
     private String adminOrigin;
-    private UserService userDetailsService;
+    private UserDetailsService userDetailsService;
     private TokenFilter tokenFilter;
 
     @Autowired
-    public SecurityConfig(UserService userDetailsService, TokenFilter tokenFilter) {
+    public SecurityConfig(@Qualifier("userDetailsServiceImpl") UserDetailsServiceImpl userDetailsService, TokenFilter tokenFilter) {
         this.userDetailsService = userDetailsService;
         this.tokenFilter = tokenFilter;
     }
@@ -48,7 +52,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/swagger-resources/**",
                         "/v2/*",
                         "/webjars/**",
-                        "/authenticate")
+                        "/authenticate",
+                        "/accounts/register")
                 .permitAll()
                 .anyRequest().authenticated()
                 .and()

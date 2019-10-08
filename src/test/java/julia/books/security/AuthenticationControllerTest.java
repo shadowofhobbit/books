@@ -1,12 +1,13 @@
 package julia.books.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import julia.books.domain.accounts.AccountRepository;
 import julia.books.domain.accounts.AccountRole;
-import julia.books.domain.accounts.UserService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -28,7 +29,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class AuthenticationControllerTest {
 
     @MockBean
-    UserService userService;
+    @Qualifier("userDetailsServiceImpl")
+    UserDetailsServiceImpl userDetailsService;
+
+    @MockBean
+    AccountRepository accountRepository;
 
     @MockBean
     TokenService tokenService;
@@ -58,7 +63,7 @@ public class AuthenticationControllerTest {
                 .password(new BCryptPasswordEncoder().encode("test"))
                 .authorities(AccountRole.USER)
                 .build();
-        when(userService.loadUserByUsername("test")).thenReturn(userDetails);
+        when(userDetailsService.loadUserByUsername("test")).thenReturn(userDetails);
 
         MockHttpServletRequestBuilder request = post("/authenticate")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -73,7 +78,7 @@ public class AuthenticationControllerTest {
 
     @Test
     public void createAuthenticationTokenUserNotFound() throws Exception {
-        when(userService.loadUserByUsername("test")).thenThrow(UsernameNotFoundException.class);
+        when(userDetailsService.loadUserByUsername("test")).thenThrow(UsernameNotFoundException.class);
 
         MockHttpServletRequestBuilder request = post("/authenticate")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -90,7 +95,7 @@ public class AuthenticationControllerTest {
                 .password(new BCryptPasswordEncoder().encode("test2"))
                 .authorities(AccountRole.USER)
                 .build();
-        when(userService.loadUserByUsername("test")).thenReturn(userDetails);
+        when(userDetailsService.loadUserByUsername("test")).thenReturn(userDetails);
 
         MockHttpServletRequestBuilder request = post("/authenticate")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
