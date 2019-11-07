@@ -1,6 +1,5 @@
 package julia.books.security;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import julia.books.domain.accounts.UserService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,10 +44,8 @@ public class TokenFilter extends OncePerRequestFilter {
                         null,
                         userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            } catch (IllegalArgumentException e) {
-                log.error("Unable to get JWT Token");
-            } catch (ExpiredJwtException e) {
-                log.error("JWT Token has expired");
+            } catch (Exception e) {
+                log.error(e);
             }
         }
         SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,4 +30,10 @@ public class AuthenticationController {
         var userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
         return tokenService.generateToken(userDetails);
     }
+
+    @GetMapping("/authenticated")
+    public Boolean validate() {
+        return SecurityContextHolder.getContext().getAuthentication() != null;
+    }
+
 }
