@@ -1,6 +1,7 @@
 package julia.books.domain.accounts;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import julia.books.security.Token;
 import julia.books.security.TokenService;
 import julia.books.security.UserDetailsServiceImpl;
 import org.junit.Before;
@@ -52,13 +53,8 @@ public class AccountControllerTest {
     public void registerUser() throws Exception {
         registrationInvoice.setRole(AccountRole.USER);
         invoiceJson = objectMapper.writeValueAsString(registrationInvoice);
-        var account = Account.builder()
-                .id(1)
-                .username("test")
-                .email("test@example.com")
-                .role(AccountRole.USER)
-                .build();
-        when(accountService.registerUser(any())).thenReturn(account);
+        var token = new Token("header.payload.sig");
+        when(accountService.registerUser(any())).thenReturn(token);
         MockHttpServletRequestBuilder request = post("/accounts/register")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(invoiceJson);
@@ -66,7 +62,7 @@ public class AccountControllerTest {
         this.mvc.perform(request)
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(objectMapper.writeValueAsString(account)));
+                .andExpect(content().json(objectMapper.writeValueAsString(token)));
     }
 
     @Test

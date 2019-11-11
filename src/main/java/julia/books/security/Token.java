@@ -3,6 +3,6 @@ package julia.books.security;
 import lombok.Data;
 
 @Data
-class Token {
+public class Token {
     private final String token;
 }

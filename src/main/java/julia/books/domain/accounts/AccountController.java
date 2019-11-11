@@ -1,5 +1,6 @@
 package julia.books.domain.accounts;
 
+import julia.books.security.Token;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,7 +20,7 @@ public class AccountController {
     }
 
     @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Account registerUser(@RequestBody RegistrationInvoice registrationInvoice) {
+    Token registerUser(@RequestBody RegistrationInvoice registrationInvoice) {
         return accountService.registerUser(registrationInvoice);
     }
 

@@ -1,18 +1,17 @@
 package julia.books.domain.accounts;
 
+import julia.books.security.AuthenticationService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -24,13 +23,15 @@ public class AccountServiceTest {
     private AccountRepository accountRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
+    @Mock
+    private AuthenticationService authenticationService;
 
     private AccountService accountService;
     private RegistrationInvoice invoice;
 
     @Before
     public void setUp() {
-        accountService = new AccountService(accountRepository, passwordEncoder);
+        accountService = new AccountService(accountRepository, passwordEncoder, authenticationService);
         invoice = new RegistrationInvoice("test", "test@example.com", "testQwerty");
         invoice.setRole(AccountRole.ADMIN);
     }

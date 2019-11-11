@@ -38,17 +38,21 @@ public class AuthenticationControllerTest {
     @MockBean
     TokenService tokenService;
 
+    @MockBean
+    AuthenticationService authenticationService;
+
     @Autowired
     private MockMvc mvc;
 
     private Token token;
     private ObjectMapper objectMapper;
     private String authInvoiceJson;
+    private AuthenticationInvoice authInvoice;
 
 
     @Before
     public void setUp() throws Exception {
-        var authInvoice = new AuthenticationInvoice();
+        authInvoice = new AuthenticationInvoice();
         authInvoice.setUsername("test");
         authInvoice.setPassword("test");
         objectMapper = new ObjectMapper();
@@ -59,12 +63,8 @@ public class AuthenticationControllerTest {
 
     @Test
     public void createAuthenticationTokenUserFound() throws Exception {
-        var userDetails = User.withUsername("test")
-                .password(new BCryptPasswordEncoder().encode("test"))
-                .authorities(AccountRole.USER)
-                .build();
-        when(userDetailsService.loadUserByUsername("test")).thenReturn(userDetails);
-
+        when(authenticationService.createAuthenticationToken(authInvoice.getUsername(), authInvoice.getPassword()))
+                .thenReturn(token);
         MockHttpServletRequestBuilder request = post("/authenticate")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(authInvoiceJson);
@@ -78,8 +78,8 @@ public class AuthenticationControllerTest {
 
     @Test
     public void createAuthenticationTokenUserNotFound() throws Exception {
-        when(userDetailsService.loadUserByUsername("test")).thenThrow(UsernameNotFoundException.class);
-
+        when(authenticationService.createAuthenticationToken(authInvoice.getUsername(), authInvoice.getPassword()))
+                .thenThrow(UsernameNotFoundException.class);
         MockHttpServletRequestBuilder request = post("/authenticate")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(authInvoiceJson);
