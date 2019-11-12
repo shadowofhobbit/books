@@ -2,7 +2,6 @@ package julia.books.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import julia.books.domain.accounts.AccountRepository;
-import julia.books.domain.accounts.AccountRole;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,9 +10,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -91,11 +89,8 @@ public class AuthenticationControllerTest {
 
     @Test
     public void createAuthenticationTokenWrongPassword() throws Exception {
-        var userDetails = User.withUsername("test")
-                .password(new BCryptPasswordEncoder().encode("test2"))
-                .authorities(AccountRole.USER)
-                .build();
-        when(userDetailsService.loadUserByUsername("test")).thenReturn(userDetails);
+        when(authenticationService.createAuthenticationToken(authInvoice.getUsername(), authInvoice.getPassword()))
+                .thenThrow(BadCredentialsException.class);
 
         MockHttpServletRequestBuilder request = post("/authenticate")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

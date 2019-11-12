@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -31,9 +32,6 @@ public class AuthenticationServiceTest {
     @MockBean
     AuthenticationManager authenticationManager;
 
-    private Token token;
-
-
     private AuthenticationService authenticationService;
 
     @Before
@@ -42,7 +40,7 @@ public class AuthenticationServiceTest {
         var authInvoice = new AuthenticationInvoice();
         authInvoice.setUsername("test");
         authInvoice.setPassword("test");
-        token = new Token("header.payload.sig");
+        Token token = new Token("header.payload.sig");
         when(tokenService.generateToken(any())).thenReturn(token);
     }
 
@@ -57,21 +55,17 @@ public class AuthenticationServiceTest {
         verify(tokenService).generateToken(userDetails);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = UsernameNotFoundException.class)
     public void createAuthenticationTokenUserNotFound() {
         when(userDetailsService.loadUserByUsername("test")).thenThrow(UsernameNotFoundException.class);
         authenticationService.createAuthenticationToken("test", "test");
         verifyNoMoreInteractions(tokenService);
     }
 
-    @Test
+    @Test(expected = BadCredentialsException.class)
     public void createAuthenticationTokenWrongPassword() {
-        var userDetails = User.withUsername("test")
-                .password(new BCryptPasswordEncoder().encode("test2"))
-                .authorities(AccountRole.USER)
-                .build();
-        when(userDetailsService.loadUserByUsername("test")).thenReturn(userDetails);
+        when(authenticationManager.authenticate(any())).thenThrow(BadCredentialsException.class);
         authenticationService.createAuthenticationToken("test", "test");
-        verify(tokenService).generateToken(userDetails);
+        verifyNoMoreInteractions(tokenService);
     }
 }
