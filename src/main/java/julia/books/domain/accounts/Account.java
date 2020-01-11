@@ -1,10 +1,11 @@
 package julia.books.domain.accounts;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 class Account {
     private Integer id;
     private String username;

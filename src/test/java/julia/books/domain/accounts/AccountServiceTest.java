@@ -25,13 +25,15 @@ public class AccountServiceTest {
     private PasswordEncoder passwordEncoder;
     @Mock
     private AuthenticationService authenticationService;
+    @Mock
+    private AccountMapper accountMapper;
 
     private AccountService accountService;
     private RegistrationInvoice invoice;
 
     @Before
     public void setUp() {
-        accountService = new AccountService(accountRepository, passwordEncoder, authenticationService);
+        accountService = new AccountService(accountRepository, passwordEncoder, authenticationService, accountMapper);
         invoice = new RegistrationInvoice("test", "test@example.com", "testQwerty");
         invoice.setRole(AccountRole.ADMIN);
     }

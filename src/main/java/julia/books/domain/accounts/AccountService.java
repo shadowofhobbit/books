@@ -11,12 +11,14 @@ public class AccountService {
     private AccountRepository accountRepository;
     private PasswordEncoder passwordEncoder;
     private AuthenticationService authenticationService;
+    private AccountMapper accountMapper;
 
     @Autowired
-    public AccountService(AccountRepository accountRepository, PasswordEncoder passwordEncoder, AuthenticationService authenticationService) {
+    public AccountService(AccountRepository accountRepository, PasswordEncoder passwordEncoder, AuthenticationService authenticationService, AccountMapper accountMapper) {
         this.accountRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationService = authenticationService;
+        this.accountMapper = accountMapper;
     }
 
     Token registerUser(RegistrationInvoice invoice) {
@@ -39,13 +41,7 @@ public class AccountService {
                 .role(invoice.getRole())
                 .build();
         AccountEntity savedEntity = accountRepository.save(accountEntity);
-        return Account.builder()
-                .email(savedEntity.getEmail())
-                .passwordHash(savedEntity.getPasswordHash())
-                .username(savedEntity.getUsername())
-                .role(savedEntity.getRole())
-                .id(savedEntity.getId())
-                .build();
+        return accountMapper.toDto(savedEntity);
     }
 
 }
