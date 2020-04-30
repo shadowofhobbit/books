@@ -34,8 +34,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private String userOrigin;
     @Value("${books.origin.admin}")
     private String adminOrigin;
-    private UserDetailsService userDetailsService;
-    private TokenFilter tokenFilter;
+    private final UserDetailsService userDetailsService;
+    private final TokenFilter tokenFilter;
 
     @Autowired
     public SecurityConfig(@Qualifier("userDetailsServiceImpl") UserDetailsServiceImpl userDetailsService, TokenFilter tokenFilter) {
@@ -53,6 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/v2/*",
                         "/webjars/**",
                         "/authenticate",
+                        "/books/",
                         "/accounts/register")
                 .permitAll()
                 .anyRequest().authenticated()
