@@ -14,7 +14,7 @@ import java.util.HashMap;
 public class TokenService {
     private static final long JWT_TOKEN_VALIDITY_MS = 24 * 60 * 60 * 1000;
 
-    private SecretKey secret = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    private final SecretKey secret = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     String getUsernameFromToken(String token) {
         var claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();

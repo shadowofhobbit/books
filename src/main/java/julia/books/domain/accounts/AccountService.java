@@ -2,26 +2,19 @@ package julia.books.domain.accounts;
 
 import julia.books.security.AuthenticationService;
 import julia.books.security.Token;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @Log4j2
+@RequiredArgsConstructor
 public class AccountService {
-    private AccountRepository accountRepository;
-    private PasswordEncoder passwordEncoder;
-    private AuthenticationService authenticationService;
-    private AccountMapper accountMapper;
-
-    @Autowired
-    public AccountService(AccountRepository accountRepository, PasswordEncoder passwordEncoder, AuthenticationService authenticationService, AccountMapper accountMapper) {
-        this.accountRepository = accountRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.authenticationService = authenticationService;
-        this.accountMapper = accountMapper;
-    }
+    private final AccountRepository accountRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationService authenticationService;
+    private final AccountMapper accountMapper;
 
     Token registerUser(RegistrationInvoice invoice) {
         invoice.setRole(AccountRole.USER);
@@ -31,10 +24,10 @@ public class AccountService {
 
     Account register(RegistrationInvoice invoice) {
         if (accountRepository.findByUsername(invoice.getUsername()).isPresent()) {
-            throw new RuntimeException("Username taken");
+            throw new IllegalArgumentException("Username taken");
         }
         if (accountRepository.findByEmail(invoice.getEmail()).isPresent()) {
-            throw new RuntimeException("Email taken");
+            throw new IllegalArgumentException("Email taken");
         }
         var accountEntity = AccountEntity.builder()
                 .username(invoice.getUsername())
