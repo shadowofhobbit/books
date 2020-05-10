@@ -2,11 +2,13 @@ package julia.books.domain.accounts;
 
 import julia.books.security.AuthenticationService;
 import julia.books.security.Token;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@Log4j2
 public class AccountService {
     private AccountRepository accountRepository;
     private PasswordEncoder passwordEncoder;
@@ -41,6 +43,7 @@ public class AccountService {
                 .role(invoice.getRole())
                 .build();
         AccountEntity savedEntity = accountRepository.save(accountEntity);
+        log.info("Created account " + savedEntity.getId());
         return accountMapper.toDto(savedEntity);
     }
 
