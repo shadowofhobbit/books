@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "books.origin.user",
+      "type": "java.lang.String",
+      "description": "Books client url."
+    },
+    {
+      "name": "books.origin.admin",
+      "type": "java.lang.String",
+      "description": "Books admin url."
+    }
+  ] }
