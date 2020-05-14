@@ -2,12 +2,10 @@ package julia.books.domain.accounts;
 
 import julia.books.security.Token;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/accounts")
@@ -23,6 +21,7 @@ public class AccountController {
 
     @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(value = "hasAuthority('ADMIN')")
+    @ResponseStatus(value = HttpStatus.CREATED)
     Account register(@RequestBody RegistrationInvoice registrationInvoice) {
         return accountService.register(registrationInvoice);
     }
