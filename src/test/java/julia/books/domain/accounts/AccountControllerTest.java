@@ -88,7 +88,7 @@ public class AccountControllerTest {
                 .content(invoiceJson);
 
         this.mvc.perform(request)
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(objectMapper.writeValueAsString(account)));
     }
