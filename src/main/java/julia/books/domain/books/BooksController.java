@@ -1,10 +1,13 @@
 package julia.books.domain.books;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/books/")
@@ -14,6 +17,13 @@ public class BooksController {
     @Autowired
     public BooksController(BooksService booksService) {
         this.booksService = booksService;
+    }
+
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @ResponseStatus(HttpStatus.CREATED)
+    Book createBook(@Valid @RequestBody BookInvoice bookInvoice) {
+        return booksService.create(bookInvoice);
     }
 
     @GetMapping
@@ -27,5 +37,22 @@ public class BooksController {
         return booksService.getBooks(page, size);
     }
 
+    @GetMapping(path="{id}")
+    ResponseEntity<Book> get(@PathVariable long id) {
+        return ResponseEntity.of(booksService.get(id));
+    }
+
+    @PutMapping(path="{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    void updateBook(@Valid @RequestBody BookInvoice bookInvoice) {
+        booksService.update(bookInvoice);
+    }
+
+    @DeleteMapping("{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteBook(@PathVariable long id) {
+        booksService.delete(id);
+    }
 
 }

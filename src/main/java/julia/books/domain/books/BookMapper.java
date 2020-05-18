@@ -7,4 +7,6 @@ import org.springframework.stereotype.Service;
 @Service
 public interface BookMapper {
     Book toDto(BookEntity entity);
+
+    BookEntity toEntity(BookInvoice bookInvoice);
 }
