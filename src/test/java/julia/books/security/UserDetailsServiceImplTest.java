@@ -48,6 +48,8 @@ public class UserDetailsServiceImplTest {
         var userDetails = userDetailsService.loadUserByUsername("test");
         assertEquals(userDetails.getUsername(), account.getUsername());
         assertEquals(userDetails.getPassword(), account.getPasswordHash());
-        assertTrue(userDetails.getAuthorities().contains(account.getRole()));
+        assertTrue(userDetails.getAuthorities().stream()
+                .map(Object::toString)
+                .anyMatch(authority -> authority.equals("ROLE_USER")));
     }
 }

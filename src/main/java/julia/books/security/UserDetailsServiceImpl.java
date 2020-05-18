@@ -19,7 +19,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException(username + " not found"));
         return User.withUsername(account.getUsername())
                 .password(account.getPasswordHash())
-                .authorities(account.getRole())
+                .roles(account.getRole().name())
                 .build();
     }
 

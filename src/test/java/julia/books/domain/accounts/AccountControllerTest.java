@@ -60,14 +60,14 @@ public class AccountControllerTest {
                 .content(invoiceJson);
 
         this.mvc.perform(request)
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(objectMapper.writeValueAsString(token)));
     }
 
     @Test
-    @WithMockUser
-    public void createAdminWithAdminAuthority() throws Exception {
+    @WithMockUser(roles = {"ADMIN"})
+    public void createAdminWithAdminRole() throws Exception {
         registrationInvoice.setRole(AccountRole.ADMIN);
         invoiceJson = objectMapper.writeValueAsString(registrationInvoice);
         var account = Account.builder()
@@ -79,7 +79,7 @@ public class AccountControllerTest {
         when(accountService.register(any())).thenReturn(account);
         var loggedInAdminDetails = User.withUsername("admin")
                 .password("hashhashhash")
-                .authorities(AccountRole.ADMIN)
+                .roles(AccountRole.ADMIN.name())
                 .build();
         when(userDetailsService.loadUserByUsername(any())).thenReturn(loggedInAdminDetails);
         MockHttpServletRequestBuilder request = post("/accounts/create")
