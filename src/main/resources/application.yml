@@ -9,3 +9,8 @@ books:
     admin: http://localhost:4201
 logging:
   path: ${BOOKS_LOGS_PATH:/Users/julia/logs/books}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,loggers

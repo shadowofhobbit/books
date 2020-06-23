@@ -5,6 +5,7 @@ import julia.books.security.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -54,8 +55,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/webjars/**",
                         "/authenticate",
                         "/books/",
-                        "/accounts/register")
+                        "/accounts/register",
+                        "/actuator/health")
                 .permitAll()
+                .requestMatchers(
+                        EndpointRequest.toAnyEndpoint()
+                                .excluding("health", "info"))
+                .hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint())
