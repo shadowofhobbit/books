@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/books/")
+@RequestMapping("/books")
 public class BooksController {
     private final BooksService booksService;
 
@@ -37,18 +37,18 @@ public class BooksController {
         return booksService.getBooks(page, size);
     }
 
-    @GetMapping(path="{id}")
+    @GetMapping(path="/{id}")
     ResponseEntity<Book> get(@PathVariable long id) {
         return ResponseEntity.of(booksService.get(id));
     }
 
-    @PutMapping(path="{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path="/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     void updateBook(@Valid @RequestBody BookInvoice bookInvoice) {
         booksService.update(bookInvoice);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteBook(@PathVariable long id) {
