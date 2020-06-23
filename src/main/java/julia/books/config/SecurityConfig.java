@@ -53,7 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/v2/*",
                         "/webjars/**",
                         "/authenticate",
-                        "/books/",
+                        "/books/**",
                         "/accounts/register")
                 .permitAll()
                 .anyRequest().authenticated()
