@@ -3,10 +3,6 @@ spring:
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/books}
     username: ${DATABASE_USERNAME:julia}
     password: ${DATABASE_PASSWORD:}
-books:
-  origin:
-    user: http://localhost:4200
-    admin: http://localhost:4201
 logging:
   path: ${BOOKS_LOGS_PATH:/Users/julia/logs/books}
 management:
