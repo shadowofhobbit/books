@@ -16,9 +16,9 @@ public class BookEntity {
     @Id
     @GeneratedValue
     private Long id;
-    @NaturalId
+    @NaturalId(mutable = true)
     private String title;
-    @NaturalId
+    @NaturalId(mutable = true)
     private String author;
     private String description;
     private Integer year;
