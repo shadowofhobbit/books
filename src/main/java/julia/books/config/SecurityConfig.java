@@ -4,6 +4,7 @@ import julia.books.security.TokenFilter;
 import julia.books.security.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,11 +25,16 @@ import org.springframework.web.cors.CorsConfigurationSource;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+    @Value("${books.origin.user}")
+    private String userOrigin;
+    @Value("${books.origin.admin}")
+    private String adminOrigin;
     private final UserDetailsService userDetailsService;
     private final TokenFilter tokenFilter;
 
@@ -95,7 +101,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     CorsConfigurationSource corsConfigurationSource() {
         var corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowedHeaders(Collections.singletonList(CorsConfiguration.ALL));
-        corsConfiguration.setAllowedOrigins(Collections.singletonList(CorsConfiguration.ALL));
+        corsConfiguration.setAllowedOrigins(List.of(userOrigin, adminOrigin));
         corsConfiguration.setAllowedMethods(Collections.singletonList(CorsConfiguration.ALL));
         return request -> corsConfiguration;
     }
