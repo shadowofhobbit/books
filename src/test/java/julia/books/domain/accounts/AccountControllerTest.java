@@ -53,7 +53,7 @@ public class AccountControllerTest {
     public void registerUser() throws Exception {
         registrationInvoice.setRole(AccountRole.USER);
         invoiceJson = objectMapper.writeValueAsString(registrationInvoice);
-        var token = new Token("header.payload.sig");
+        var token = new Token("header.payload.sig", "");
         when(accountService.registerUser(any())).thenReturn(token);
         MockHttpServletRequestBuilder request = post("/accounts/register")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -81,7 +81,8 @@ public class AccountControllerTest {
                 .password("hashhashhash")
                 .roles(AccountRole.ADMIN.name())
                 .build();
-        when(userDetailsService.loadUserByUsername(any())).thenReturn(loggedInAdminDetails);
+        var user = new UserDetailsServiceImpl.CustomUser(loggedInAdminDetails, 2);
+        when(userDetailsService.loadUserByUsername(any())).thenReturn(user);
         MockHttpServletRequestBuilder request = post("/accounts/create")
                 .header("Authorization", "Bearer something")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -109,7 +110,8 @@ public class AccountControllerTest {
                 .password("hashhashhash")
                 .authorities(AccountRole.USER)
                 .build();
-        when(userDetailsService.loadUserByUsername(any())).thenReturn(loggedInUserDetails);
+        var user = new UserDetailsServiceImpl.CustomUser(loggedInUserDetails, 2);
+        when(userDetailsService.loadUserByUsername(any())).thenReturn(user);
         MockHttpServletRequestBuilder request = post("/accounts/create")
                 .header("Authorization", "Bearer something")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

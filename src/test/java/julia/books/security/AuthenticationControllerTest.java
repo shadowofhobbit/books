@@ -55,7 +55,7 @@ public class AuthenticationControllerTest {
         authInvoice.setPassword("test");
         objectMapper = new ObjectMapper();
         authInvoiceJson = objectMapper.writeValueAsString(authInvoice);
-        token = new Token("header.payload.sig");
+        token = new Token("header.payload.sig", "test-test");
         when(tokenService.generateToken(any())).thenReturn(token);
     }
 
@@ -63,7 +63,7 @@ public class AuthenticationControllerTest {
     public void createAuthenticationTokenUserFound() throws Exception {
         when(authenticationService.createAuthenticationToken(authInvoice.getUsername(), authInvoice.getPassword()))
                 .thenReturn(token);
-        MockHttpServletRequestBuilder request = post("/authenticate")
+        MockHttpServletRequestBuilder request = post("/auth/login")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(authInvoiceJson);
 

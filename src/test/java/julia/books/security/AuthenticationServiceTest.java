@@ -40,7 +40,7 @@ public class AuthenticationServiceTest {
         var authInvoice = new AuthenticationInvoice();
         authInvoice.setUsername("test");
         authInvoice.setPassword("test");
-        Token token = new Token("header.payload.sig");
+        Token token = new Token("header.payload.sig", "gsyauwdgfwoudf");
         when(tokenService.generateToken(any())).thenReturn(token);
     }
 
@@ -50,9 +50,10 @@ public class AuthenticationServiceTest {
                 .password(new BCryptPasswordEncoder().encode("test"))
                 .authorities(AccountRole.USER)
                 .build();
-        when(userDetailsService.loadUserByUsername("test")).thenReturn(userDetails);
+        var user = new UserDetailsServiceImpl.CustomUser(userDetails, 1);
+        when(userDetailsService.loadUserByUsername("test")).thenReturn(user);
         authenticationService.createAuthenticationToken("test", "test");
-        verify(tokenService).generateToken(userDetails);
+        verify(tokenService).generateToken(user);
     }
 
     @Test(expected = UsernameNotFoundException.class)

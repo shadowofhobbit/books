@@ -1,14 +1,16 @@
 package julia.books.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.Cookie;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 
 @RestController
+@RequestMapping("/auth")
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
@@ -17,10 +19,31 @@ public class AuthenticationController {
         this.authenticationService = authenticationService;
     }
 
-    @PostMapping(value = "/authenticate", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Token createAuthenticationToken(@RequestBody AuthenticationInvoice authenticationRequest) {
-        return authenticationService.createAuthenticationToken(authenticationRequest.getUsername(),
+    @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Token> createAuthenticationToken(@RequestBody AuthenticationInvoice authenticationRequest) {
+        var token = authenticationService.createAuthenticationToken(authenticationRequest.getUsername(),
                 authenticationRequest.getPassword());
+        return setCookieAndReturnTokens(token);
+    }
+
+    @PostMapping(value="/refresh")
+    public ResponseEntity<Token> refresh(@CookieValue("refreshToken") Cookie refreshCookie) {
+        Token token = authenticationService.refreshToken(refreshCookie.getValue());
+        return setCookieAndReturnTokens(token);
+
+    }
+
+    private ResponseEntity<Token> setCookieAndReturnTokens(Token token) {
+        var cookie = ResponseCookie.from("refreshToken",
+                token.getRefreshToken())
+                .httpOnly(true)
+                .secure(true)
+                .path("/auth")
+                .maxAge(Duration.of(60, ChronoUnit.DAYS))
+                .build();
+        var headers = new HttpHeaders();
+        headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
+        return new ResponseEntity<>(token, headers, HttpStatus.OK);
     }
 
     @GetMapping("/authenticated")
@@ -28,4 +51,8 @@ public class AuthenticationController {
         return SecurityContextHolder.getContext().getAuthentication() != null;
     }
 
+    @DeleteMapping("/logout")
+    public void logout(@CookieValue("refreshToken") Cookie refreshCookie) {
+        authenticationService.deleteToken(refreshCookie.getValue());
+    }
 }

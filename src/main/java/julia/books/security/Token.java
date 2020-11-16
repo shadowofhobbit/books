@@ -4,5 +4,6 @@ import lombok.Data;
 
 @Data
 public class Token {
-    private final String token;
+    private final String accessToken;
+    private final String refreshToken;
 }

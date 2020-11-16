@@ -53,7 +53,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/swagger-resources/**",
                         "/v2/*",
                         "/webjars/**",
-                        "/authenticate",
+                        "/auth/login",
+                        "/auth/refresh",
                         "/books/**",
                         "/accounts/register",
                         "/actuator/health")
@@ -103,6 +104,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         corsConfiguration.setAllowedHeaders(Collections.singletonList(CorsConfiguration.ALL));
         corsConfiguration.setAllowedOrigins(List.of(userOrigin, adminOrigin));
         corsConfiguration.setAllowedMethods(Collections.singletonList(CorsConfiguration.ALL));
+        corsConfiguration.setAllowCredentials(true);
         return request -> corsConfiguration;
     }
 }
