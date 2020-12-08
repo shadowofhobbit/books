@@ -2,10 +2,11 @@ package julia.books.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
+import java.security.Principal;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
@@ -47,8 +48,8 @@ public class AuthenticationController {
     }
 
     @GetMapping("/authenticated")
-    public Boolean validate() {
-        return SecurityContextHolder.getContext().getAuthentication() != null;
+    public Boolean validate(Principal principal) {
+        return (principal != null) && ((Authentication) principal).isAuthenticated();
     }
 
     @DeleteMapping("/logout")

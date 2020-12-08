@@ -55,6 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/webjars/**",
                         "/auth/login",
                         "/auth/refresh",
+                        "/auth/authenticated",
                         "/books/**",
                         "/accounts/register",
                         "/actuator/health")
