@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.1.7.RELEASE'
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id 'java'
+    id 'pmd'
 }
 
 group = 'julia'
@@ -44,3 +45,11 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 }
+
+
+pmd {
+    ruleSets = ["category/java/errorprone.xml", "category/java/bestpractices.xml",
+                "category/java/codestyle.xml", "category/java/performance.xml",
+                "category/java/security.xml"]
+}
+

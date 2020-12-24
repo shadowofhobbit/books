@@ -24,17 +24,17 @@ public class AuthenticationController {
     public ResponseEntity<Token> createAuthenticationToken(@RequestBody AuthenticationInvoice authenticationRequest) {
         var token = authenticationService.createAuthenticationToken(authenticationRequest.getUsername(),
                 authenticationRequest.getPassword());
-        return setCookieAndReturnTokens(token);
+        return createResponseWithCookie(token);
     }
 
-    @PostMapping(value="/refresh")
+    @PostMapping("/refresh")
     public ResponseEntity<Token> refresh(@CookieValue("refreshToken") Cookie refreshCookie) {
         Token token = authenticationService.refreshToken(refreshCookie.getValue());
-        return setCookieAndReturnTokens(token);
+        return createResponseWithCookie(token);
 
     }
 
-    private ResponseEntity<Token> setCookieAndReturnTokens(Token token) {
+    private ResponseEntity<Token> createResponseWithCookie(Token token) {
         var cookie = ResponseCookie.from("refreshToken",
                 token.getRefreshToken())
                 .httpOnly(true)
@@ -49,7 +49,7 @@ public class AuthenticationController {
 
     @GetMapping("/authenticated")
     public Boolean validate(Principal principal) {
-        return (principal != null) && ((Authentication) principal).isAuthenticated();
+        return principal != null && ((Authentication) principal).isAuthenticated();
     }
 
     @DeleteMapping("/logout")
