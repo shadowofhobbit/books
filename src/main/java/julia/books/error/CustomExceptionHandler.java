@@ -21,5 +21,10 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorRepresentation error = new ErrorRepresentation(exception.getMessage());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(NoTokenException.class)
+    public ResponseEntity<?> handleNoToken() {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
 }
 

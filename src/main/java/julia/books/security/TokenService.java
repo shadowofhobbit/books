@@ -5,8 +5,10 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import julia.books.domain.accounts.AccountEntity;
 import julia.books.domain.accounts.AccountRepository;
+import julia.books.error.NoTokenException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.SecretKey;
 import java.time.Instant;
@@ -40,10 +42,10 @@ public class TokenService {
         return createToken(userDetails.getUsername(), userDetails.getId());
     }
 
-
+    @Transactional
     public Token refreshToken(String refreshToken) {
         var currentSession = repository.findByRefreshToken(UUID.fromString(refreshToken))
-                .orElseThrow();
+                .orElseThrow(NoTokenException::new);
         repository.delete(currentSession);
         if (currentSession.getCreatedAt().plus(currentSession.getExpiresIn(), ChronoUnit.DAYS).isBefore(Instant.now())) {
             throw new RuntimeException("Token expired");
