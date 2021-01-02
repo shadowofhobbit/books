@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -13,6 +15,8 @@ class Account {
     private Integer id;
     private String username;
     private String email;
-    private String passwordHash;
+    private boolean confirmedEmail;
+    private LocalDate birthday;
     private AccountRole role;
+    private String description;
 }

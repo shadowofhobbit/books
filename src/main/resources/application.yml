@@ -5,13 +5,19 @@ spring:
     password: ${DATABASE_PASSWORD:}
   jpa:
     open-in-view: false
+    show-sql: true
 books:
   origin:
     user: http://localhost:4200
     admin: http://localhost:4201
 logging:
   path: ${BOOKS_LOGS_PATH:/Users/julia/logs/books}
-management:
+  level:
+    org:
+      springframework:
+        transaction:
+          interceptor: TRACE
+
   endpoints:
     web:
       exposure:

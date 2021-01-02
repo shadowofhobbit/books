@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Log4j2
@@ -16,13 +17,15 @@ public class AccountService {
     private final AuthenticationService authenticationService;
     private final AccountMapper accountMapper;
 
-    Token registerUser(RegistrationInvoice invoice) {
+    @Transactional
+    public Token registerUser(RegistrationInvoice invoice) {
         invoice.setRole(AccountRole.USER);
         register(invoice);
         return authenticationService.createAuthenticationToken(invoice.getUsername(), invoice.getPassword());
     }
 
-    Account register(RegistrationInvoice invoice) {
+    @Transactional
+    public Account register(RegistrationInvoice invoice) {
         if (accountRepository.findByUsername(invoice.getUsername()).isPresent()) {
             throw new IllegalArgumentException("Username taken");
         }
@@ -33,6 +36,7 @@ public class AccountService {
                 .username(invoice.getUsername())
                 .passwordHash(passwordEncoder.encode(invoice.getPassword()))
                 .email(invoice.getEmail())
+                .confirmedEmail(false)
                 .role(invoice.getRole())
                 .build();
         AccountEntity savedEntity = accountRepository.save(accountEntity);
@@ -40,4 +44,17 @@ public class AccountService {
         return accountMapper.toDto(savedEntity);
     }
 
+    public Account get(int id) {
+        return accountRepository.findById(id)
+                .map(accountMapper::toDto)
+                .orElseThrow();
+    }
+
+    @Transactional
+    public Account update(Integer id, Account account) {
+        var old = accountRepository.findById(id).orElseThrow();
+        old.setDescription(account.getDescription());
+        old.setBirthday(account.getBirthday());
+        return accountMapper.toDto(old);
+    }
 }
