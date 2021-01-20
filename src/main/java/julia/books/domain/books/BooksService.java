@@ -23,7 +23,7 @@ public class BooksService {
     SearchResult<Book> getBooks(int pageNumber, int size) {
         Page<Book> page = repository.findAll(PageRequest.of(pageNumber, size))
                 .map(bookMapper::toDto);
-        return new SearchResult<>(page.getContent(), page.getNumber(), page.getSize(), page.getNumberOfElements());
+        return new SearchResult<>(page.getContent(), page.getNumber(), page.getSize(), page.getTotalElements());
     }
 
     public Optional<Book> get(long id) {

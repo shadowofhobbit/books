@@ -6,6 +6,8 @@ spring:
   jpa:
     open-in-view: false
     show-sql: true
+    hibernate:
+      ddl-auto: update
 books:
   origin:
     user: http://localhost:4200
