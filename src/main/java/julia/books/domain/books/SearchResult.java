@@ -10,5 +10,5 @@ public class SearchResult<T> {
     List<T> content;
     int page;
     int size;
-    int totalElements;
+    long totalElements;
 }
