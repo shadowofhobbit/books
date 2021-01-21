@@ -12,6 +12,15 @@
     <rule ref="category/java/codestyle.xml">
         <exclude name="MethodArgumentCouldBeFinal"/>
     </rule>
+    <rule ref="category/java/codestyle.xml/ShortVariable">
+        <properties>
+            <property name="violationSuppressXPath">
+                <value>
+                    @Image='id'
+                </value>
+            </property>
+        </properties>
+    </rule>
     <rule ref="category/java/codestyle.xml/LongVariable">
         <properties>
             <property name="minimum" value="20"/>
