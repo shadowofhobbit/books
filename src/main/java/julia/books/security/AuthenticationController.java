@@ -1,5 +1,8 @@
 package julia.books.security;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
@@ -12,6 +15,7 @@ import java.time.temporal.ChronoUnit;
 
 @RestController
 @RequestMapping("/auth")
+@Api(tags = "Authentication")
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
@@ -21,13 +25,15 @@ public class AuthenticationController {
     }
 
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Token> createAuthenticationToken(@RequestBody AuthenticationInvoice authenticationRequest) {
+    @ApiOperation("Log in with username and password. Returns access and refresh tokens")
+    public ResponseEntity<Token> createAuthenticationToken(@RequestBody @ApiParam("Credentials") AuthenticationInvoice authenticationRequest) {
         var token = authenticationService.createAuthenticationToken(authenticationRequest.getUsername(),
                 authenticationRequest.getPassword());
         return createResponseWithCookie(token);
     }
 
     @PostMapping("/refresh")
+    @ApiOperation("Refresh token")
     public ResponseEntity<Token> refresh(@CookieValue("refreshToken") Cookie refreshCookie) {
         Token token = authenticationService.refreshToken(refreshCookie.getValue());
         return createResponseWithCookie(token);
@@ -48,11 +54,13 @@ public class AuthenticationController {
     }
 
     @GetMapping("/authenticated")
+    @ApiOperation("Check if user is logged in")
     public Boolean validate(Principal principal) {
         return principal != null && ((Authentication) principal).isAuthenticated();
     }
 
     @DeleteMapping("/logout")
+    @ApiOperation("Log out")
     public void logout(@CookieValue("refreshToken") Cookie refreshCookie) {
         authenticationService.deleteToken(refreshCookie.getValue());
     }
