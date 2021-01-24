@@ -15,13 +15,13 @@ public class BooksService {
 
     public Book create(BookInvoice bookInvoice) {
         bookInvoice.setId(null);
-        BookEntity bookEntity = bookMapper.toEntity(bookInvoice);
-        var savedEntity = repository.save(bookEntity);
+        final BookEntity bookEntity = bookMapper.toEntity(bookInvoice);
+        final var savedEntity = repository.save(bookEntity);
         return bookMapper.toDto(savedEntity);
     }
 
-    SearchResult<Book> getBooks(int pageNumber, int size) {
-        Page<Book> page = repository.findAll(PageRequest.of(pageNumber, size))
+    public SearchResult<Book> getBooks(int pageNumber, int size) {
+        final Page<Book> page = repository.findAll(PageRequest.of(pageNumber, size))
                 .map(bookMapper::toDto);
         return new SearchResult<>(page.getContent(), page.getNumber(), page.getSize(), page.getNumberOfElements());
     }
@@ -31,11 +31,11 @@ public class BooksService {
     }
 
     public void update(BookInvoice bookInvoice) {
-        BookEntity bookEntity = bookMapper.toEntity(bookInvoice);
+        final BookEntity bookEntity = bookMapper.toEntity(bookInvoice);
         repository.save(bookEntity);
     }
 
-    void delete(long bookId) {
+    public void delete(long bookId) {
         repository.deleteById(bookId);
     }
 

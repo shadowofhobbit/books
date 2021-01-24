@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.SecretKey;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -19,13 +20,13 @@ import java.util.UUID;
 
 @Service
 public class TokenService {
-    private static final long JWT_TOKEN_VALIDITY_MINUTES = 30;
     public static final int REFRESH_TOKEN_VALIDITY_DAYS = 60;
 
     private final RefreshSessionRepository repository;
     private final AccountRepository accountRepository;
 
     private final SecretKey secret = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    private static final Duration JWT_DURATION = Duration.of(30, ChronoUnit.MINUTES);
 
     @Autowired
     public TokenService(RefreshSessionRepository repository, AccountRepository accountRepository) {
@@ -34,7 +35,7 @@ public class TokenService {
     }
 
     String getUsernameFromToken(String token) {
-        var claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        final var claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
         return claims.getSubject();
     }
 
@@ -44,20 +45,20 @@ public class TokenService {
 
     @Transactional
     public Token refreshToken(String refreshToken) {
-        var currentSession = repository.findByRefreshToken(UUID.fromString(refreshToken))
+        final var currentSession = repository.findByRefreshToken(UUID.fromString(refreshToken))
                 .orElseThrow(NoTokenException::new);
         repository.delete(currentSession);
         if (currentSession.getCreatedAt().plus(currentSession.getExpiresIn(), ChronoUnit.DAYS).isBefore(Instant.now())) {
             throw new RuntimeException("Token expired");
         }
-        AccountEntity accountEntity = accountRepository.findById(currentSession.getUserId()).orElseThrow();
+        final AccountEntity accountEntity = accountRepository.findById(currentSession.getUserId()).orElseThrow();
         return createToken(accountEntity.getUsername(), currentSession.getUserId());
     }
 
     private Token createToken(String username, int userId) {
-        var issuedAt = Instant.now();
-        var expiration = issuedAt.plus(JWT_TOKEN_VALIDITY_MINUTES, ChronoUnit.MINUTES);
-        String compact = Jwts
+        final var issuedAt = Instant.now();
+        final var expiration = issuedAt.plus(JWT_DURATION);
+        final String compact = Jwts
                 .builder()
                 .setClaims(new HashMap<>())
                 .setSubject(username)
@@ -65,8 +66,8 @@ public class TokenService {
                 .setExpiration(Date.from(expiration))
                 .signWith(secret)
                 .compact();
-        UUID uuid = UUID.randomUUID();
-        var refreshSession = new RefreshSession();
+        final UUID uuid = UUID.randomUUID();
+        final var refreshSession = new RefreshSession();
         refreshSession.setUserId(userId);
         refreshSession.setCreatedAt(issuedAt);
         refreshSession.setExpiresIn(REFRESH_TOKEN_VALIDITY_DAYS);

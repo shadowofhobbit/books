@@ -10,7 +10,15 @@
 
     <rule ref="category/java/bestpractices.xml"/>
     <rule ref="category/java/codestyle.xml">
+        <exclude name="CallSuperInConstructor"/>
+        <exclude name="CommentDefaultAccessModifier"/>
         <exclude name="MethodArgumentCouldBeFinal"/>
+        <exclude name="AtLeastOneConstructor"/>
+    </rule>
+    <rule ref="category/java/codestyle.xml/ShortClassName">
+        <properties>
+            <property name="minimum" value="3"/>
+        </properties>
     </rule>
     <rule ref="category/java/codestyle.xml/ShortVariable">
         <properties>
@@ -23,7 +31,7 @@
     </rule>
     <rule ref="category/java/codestyle.xml/LongVariable">
         <properties>
-            <property name="minimum" value="20"/>
+            <property name="minimum" value="25"/>
         </properties>
     </rule>
 

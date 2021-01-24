@@ -27,7 +27,7 @@ public class AuthenticationController {
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Log in with username and password. Returns access and refresh tokens")
     public ResponseEntity<Token> createAuthenticationToken(@RequestBody @ApiParam("Credentials") AuthenticationInvoice authenticationRequest) {
-        var token = authenticationService.createAuthenticationToken(authenticationRequest.getUsername(),
+        final var token = authenticationService.createAuthenticationToken(authenticationRequest.getUsername(),
                 authenticationRequest.getPassword());
         return createResponseWithCookie(token);
     }
@@ -35,20 +35,20 @@ public class AuthenticationController {
     @PostMapping("/refresh")
     @ApiOperation("Refresh token")
     public ResponseEntity<Token> refresh(@CookieValue("refreshToken") Cookie refreshCookie) {
-        Token token = authenticationService.refreshToken(refreshCookie.getValue());
+        final Token token = authenticationService.refreshToken(refreshCookie.getValue());
         return createResponseWithCookie(token);
 
     }
 
     private ResponseEntity<Token> createResponseWithCookie(Token token) {
-        var cookie = ResponseCookie.from("refreshToken",
+        final var cookie = ResponseCookie.from("refreshToken",
                 token.getRefreshToken())
                 .httpOnly(true)
                 .secure(true)
                 .path("/auth")
                 .maxAge(Duration.of(60, ChronoUnit.DAYS))
                 .build();
-        var headers = new HttpHeaders();
+        final var headers = new HttpHeaders();
         headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
         return new ResponseEntity<>(token, headers, HttpStatus.OK);
     }

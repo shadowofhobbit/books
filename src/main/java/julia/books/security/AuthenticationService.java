@@ -22,7 +22,7 @@ public class AuthenticationService {
 
     public Token createAuthenticationToken(String username, String password) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        var userDetails = userDetailsService.loadUserByUsername(username);
+        final var userDetails = userDetailsService.loadUserByUsername(username);
         return tokenService.generateToken(userDetails);
     }
 

@@ -34,13 +34,13 @@ public class TokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
-        var authHeader = request.getHeader(HEADER_NAME);
+        final var authHeader = request.getHeader(HEADER_NAME);
         UsernamePasswordAuthenticationToken authentication = null;
         if (authHeader != null && authHeader.startsWith(HEADER_PREFIX)) {
-            String token = authHeader.substring(HEADER_PREFIX.length());
+            final String token = authHeader.substring(HEADER_PREFIX.length());
             try {
-                var username = tokenService.getUsernameFromToken(token);
-                UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+                final var username = tokenService.getUsernameFromToken(token);
+                final UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
                 authentication = new UsernamePasswordAuthenticationToken(userDetails,
                         null,
                         userDetails.getAuthorities());

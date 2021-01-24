@@ -25,30 +25,29 @@ public class AccountController {
     @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation("Register")
-    Token registerUser(@RequestBody @Valid @ApiParam("Account data") RegistrationInvoice registrationInvoice) {
+    public Token registerUser(@RequestBody @Valid @ApiParam("Account data") RegistrationInvoice registrationInvoice) {
         return accountService.registerUser(registrationInvoice);
     }
 
     @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize(value = "hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation("Create new account (requires ADMIN role)")
-    Account register(@RequestBody @Valid @ApiParam("Account data") RegistrationInvoice registrationInvoice) {
+    public Account register(@RequestBody @Valid @ApiParam("Account data") RegistrationInvoice registrationInvoice) {
         return accountService.register(registrationInvoice);
     }
 
     @GetMapping("/current")
     @ApiOperation("Get current account")
-    Account get(Authentication authentication) {
-        var userDetails = (UserDetailsServiceImpl.CustomUser)authentication.getPrincipal();
+    public Account get(Authentication authentication) {
+        final var userDetails = (UserDetailsServiceImpl.CustomUser)authentication.getPrincipal();
         return accountService.get(userDetails.getId());
     }
 
     @PutMapping("/current")
     @ApiOperation("Update current account")
-    Account update(@RequestBody @Valid @ApiParam("Account data") Account account, Authentication authentication) {
-        System.out.println(account.getBirthday());
-        var userDetails = (UserDetailsServiceImpl.CustomUser)authentication.getPrincipal();
+    public Account update(@RequestBody @Valid @ApiParam("Account data") Account account, Authentication authentication) {
+        final var userDetails = (UserDetailsServiceImpl.CustomUser)authentication.getPrincipal();
         return accountService.update(userDetails.getId(), account);
     }
 

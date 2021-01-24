@@ -32,15 +32,15 @@ public class AccountService {
         if (accountRepository.findByEmail(invoice.getEmail()).isPresent()) {
             throw new IllegalArgumentException("Email taken");
         }
-        var accountEntity = AccountEntity.builder()
+        final var accountEntity = AccountEntity.builder()
                 .username(invoice.getUsername())
                 .passwordHash(passwordEncoder.encode(invoice.getPassword()))
                 .email(invoice.getEmail())
                 .confirmedEmail(false)
                 .role(invoice.getRole())
                 .build();
-        AccountEntity savedEntity = accountRepository.save(accountEntity);
-        log.info("Created account " + savedEntity.getId());
+        final AccountEntity savedEntity = accountRepository.save(accountEntity);
+        log.info("Created account {}", savedEntity.getId());
         return accountMapper.toDto(savedEntity);
     }
 
@@ -52,7 +52,7 @@ public class AccountService {
 
     @Transactional
     public Account update(Integer id, Account account) {
-        var old = accountRepository.findById(id).orElseThrow();
+        final var old = accountRepository.findById(id).orElseThrow();
         old.setDescription(account.getDescription());
         old.setBirthday(account.getBirthday());
         return accountMapper.toDto(old);

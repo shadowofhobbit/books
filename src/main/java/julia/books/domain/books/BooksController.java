@@ -26,14 +26,14 @@ public class BooksController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiOperation(value="Create book (requires USER or ADMIN role)")
-    Book createBook(@Valid @RequestBody @ApiParam("Book data") BookInvoice bookInvoice) {
+    @ApiOperation("Create book (requires USER or ADMIN role)")
+    public Book createBook(@Valid @RequestBody @ApiParam("Book data") BookInvoice bookInvoice) {
         return booksService.create(bookInvoice);
     }
 
     @GetMapping
-    @ApiOperation(value="Get books")
-    SearchResult<Book> getBooks(@RequestParam @ApiParam("Page number") int page, @RequestParam @ApiParam("Page size") int size) {
+    @ApiOperation("Get books")
+    public SearchResult<Book> getBooks(@RequestParam @ApiParam("Page number") int page, @RequestParam @ApiParam("Page size") int size) {
         if (page < 0) {
             throw new IllegalArgumentException("Page must be greater than or equal to 0");
         }
@@ -44,23 +44,24 @@ public class BooksController {
     }
 
     @GetMapping(path="/{id}")
-    @ApiOperation(value="Get book by id")
-    ResponseEntity<Book> get(@PathVariable @ApiParam("Book id") long id) {
+    @ApiOperation("Get book by id")
+    public ResponseEntity<Book> get(@PathVariable @ApiParam("Book id") long id) {
         return ResponseEntity.of(booksService.get(id));
     }
 
     @PutMapping(path="/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    @ApiOperation(value="Update book (requires USER or ADMIN role)")
-    void updateBook(@Valid @RequestBody @ApiParam("Book data") BookInvoice bookInvoice) {
+    @ApiOperation("Update book (requires USER or ADMIN role)")
+    public void updateBook(@PathVariable long id, @Valid @RequestBody @ApiParam("Book data") BookInvoice bookInvoice) {
+        bookInvoice.setId(id);
         booksService.update(bookInvoice);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ApiOperation(value="Delete book (requires ADMIN role)")
-    void deleteBook(@PathVariable @ApiParam("Book id") long id) {
+    @ApiOperation("Delete book (requires ADMIN role)")
+    public void deleteBook(@PathVariable @ApiParam("Book id") long id) {
         booksService.delete(id);
     }
 

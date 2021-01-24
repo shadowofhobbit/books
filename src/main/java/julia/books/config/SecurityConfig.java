@@ -79,7 +79,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    AuthenticationEntryPoint authenticationEntryPoint() {
+    public AuthenticationEntryPoint authenticationEntryPoint() {
         return (request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
     }
 
@@ -89,7 +89,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -100,8 +100,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        var corsConfiguration = new CorsConfiguration();
+    public CorsConfigurationSource corsConfigurationSource() {
+        final var corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowedHeaders(Collections.singletonList(CorsConfiguration.ALL));
         corsConfiguration.setAllowedOrigins(List.of(userOrigin, adminOrigin));
         corsConfiguration.setAllowedMethods(Collections.singletonList(CorsConfiguration.ALL));
