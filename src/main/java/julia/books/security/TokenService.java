@@ -22,15 +22,15 @@ import java.util.UUID;
 public class TokenService {
     public static final int REFRESH_TOKEN_VALIDITY_DAYS = 60;
 
-    private final RefreshSessionRepository repository;
+    private final RefreshTokensRepository redisRepository;
     private final AccountRepository accountRepository;
 
     private final SecretKey secret = Keys.secretKeyFor(SignatureAlgorithm.HS512);
     private static final Duration JWT_DURATION = Duration.of(30, ChronoUnit.MINUTES);
 
     @Autowired
-    public TokenService(RefreshSessionRepository repository, AccountRepository accountRepository) {
-        this.repository = repository;
+    public TokenService(RefreshTokensRepository redisRepository, AccountRepository accountRepository) {
+        this.redisRepository = redisRepository;
         this.accountRepository = accountRepository;
     }
 
@@ -45,14 +45,14 @@ public class TokenService {
 
     @Transactional
     public Token refreshToken(String refreshToken) {
-        final var currentSession = repository.findByRefreshToken(UUID.fromString(refreshToken))
+        final var currentToken = redisRepository.findById(UUID.fromString(refreshToken))
                 .orElseThrow(NoTokenException::new);
-        repository.delete(currentSession);
-        if (currentSession.getCreatedAt().plus(currentSession.getExpiresIn(), ChronoUnit.DAYS).isBefore(Instant.now())) {
+        redisRepository.delete(currentToken);
+        if (currentToken.getCreatedAt().plus(currentToken.getExpiresIn(), ChronoUnit.DAYS).isBefore(Instant.now())) {
             throw new RuntimeException("Token expired");
         }
-        final AccountEntity accountEntity = accountRepository.findById(currentSession.getUserId()).orElseThrow();
-        return createToken(accountEntity.getUsername(), currentSession.getUserId());
+        final AccountEntity accountEntity = accountRepository.findById(currentToken.getUserId()).orElseThrow();
+        return createToken(accountEntity.getUsername(), currentToken.getUserId());
     }
 
     private Token createToken(String username, int userId) {
@@ -67,16 +67,12 @@ public class TokenService {
                 .signWith(secret)
                 .compact();
         final UUID uuid = UUID.randomUUID();
-        final var refreshSession = new RefreshSession();
-        refreshSession.setUserId(userId);
-        refreshSession.setCreatedAt(issuedAt);
-        refreshSession.setExpiresIn(REFRESH_TOKEN_VALIDITY_DAYS);
-        refreshSession.setRefreshToken(uuid);
-        repository.save(refreshSession);
+        final var refreshToken = new RefreshToken(uuid, userId, issuedAt, REFRESH_TOKEN_VALIDITY_DAYS);
+        redisRepository.save(refreshToken);
         return new Token(compact, uuid.toString());
     }
 
     public void deleteToken(String token) {
-        repository.deleteByRefreshToken(UUID.fromString(token));
+        redisRepository.deleteById(UUID.fromString(token));
     }
 }
