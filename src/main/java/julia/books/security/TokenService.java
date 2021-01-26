@@ -22,15 +22,15 @@ import java.util.UUID;
 public class TokenService {
     public static final int REFRESH_TOKEN_VALIDITY_DAYS = 60;
 
-    private final RefreshTokensRepository redisRepository;
+    private final RefreshTokensRepository refreshTokensRepository;
     private final AccountRepository accountRepository;
 
     private final SecretKey secret = Keys.secretKeyFor(SignatureAlgorithm.HS512);
     private static final Duration JWT_DURATION = Duration.of(30, ChronoUnit.MINUTES);
 
     @Autowired
-    public TokenService(RefreshTokensRepository redisRepository, AccountRepository accountRepository) {
-        this.redisRepository = redisRepository;
+    public TokenService(RefreshTokensRepository refreshTokensRepository, AccountRepository accountRepository) {
+        this.refreshTokensRepository = refreshTokensRepository;
         this.accountRepository = accountRepository;
     }
 
@@ -45,9 +45,9 @@ public class TokenService {
 
     @Transactional
     public Token refreshToken(String refreshToken) {
-        final var currentToken = redisRepository.findById(UUID.fromString(refreshToken))
+        final var currentToken = refreshTokensRepository.findById(UUID.fromString(refreshToken))
                 .orElseThrow(NoTokenException::new);
-        redisRepository.delete(currentToken);
+        refreshTokensRepository.delete(currentToken);
         if (currentToken.getCreatedAt().plus(currentToken.getExpiresIn(), ChronoUnit.DAYS).isBefore(Instant.now())) {
             throw new RuntimeException("Token expired");
         }
@@ -68,11 +68,11 @@ public class TokenService {
                 .compact();
         final UUID uuid = UUID.randomUUID();
         final var refreshToken = new RefreshToken(uuid, userId, issuedAt, REFRESH_TOKEN_VALIDITY_DAYS);
-        redisRepository.save(refreshToken);
+        refreshTokensRepository.save(refreshToken);
         return new Token(compact, uuid.toString());
     }
 
     public void deleteToken(String token) {
-        redisRepository.deleteById(UUID.fromString(token));
+        refreshTokensRepository.deleteById(UUID.fromString(token));
     }
 }
