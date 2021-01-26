@@ -6,6 +6,9 @@ spring:
   jpa:
     open-in-view: false
     show-sql: true
+  redis:
+    host: localhost
+    port: 6379
 books:
   origin:
     user: http://localhost:4200
