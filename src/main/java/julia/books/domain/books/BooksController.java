@@ -27,13 +27,13 @@ public class BooksController {
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation("Create book (requires USER or ADMIN role)")
-    public Book createBook(@Valid @RequestBody @ApiParam("Book data") BookInvoice bookInvoice) {
-        return booksService.create(bookInvoice);
+    public BookDTO createBook(@Valid @RequestBody @ApiParam("Book data") BookDTO bookDTO) {
+        return booksService.create(bookDTO);
     }
 
     @GetMapping
     @ApiOperation("Get books")
-    public SearchResult<Book> getBooks(@RequestParam @ApiParam("Page number") int page, @RequestParam @ApiParam("Page size") int size) {
+    public SearchResult<BookDTO> getBooks(@RequestParam @ApiParam("Page number") int page, @RequestParam @ApiParam("Page size") int size) {
         if (page < 0) {
             throw new IllegalArgumentException("Page must be greater than or equal to 0");
         }
@@ -45,16 +45,16 @@ public class BooksController {
 
     @GetMapping(path="/{id}")
     @ApiOperation("Get book by id")
-    public ResponseEntity<Book> get(@PathVariable @ApiParam("Book id") long id) {
+    public ResponseEntity<BookDTO> get(@PathVariable @ApiParam("Book id") long id) {
         return ResponseEntity.of(booksService.get(id));
     }
 
     @PutMapping(path="/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @ApiOperation("Update book (requires USER or ADMIN role)")
-    public void updateBook(@PathVariable long id, @Valid @RequestBody @ApiParam("Book data") BookInvoice bookInvoice) {
-        bookInvoice.setId(id);
-        booksService.update(bookInvoice);
+    public void updateBook(@PathVariable long id, @Valid @RequestBody @ApiParam("Book data") BookDTO book) {
+        book.setId(id);
+        booksService.update(book);
     }
 
     @DeleteMapping("/{id}")

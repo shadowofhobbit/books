@@ -31,12 +31,12 @@ public class AccountServiceTest {
     private AccountMapper accountMapper;
 
     private AccountService accountService;
-    private RegistrationInvoice invoice;
+    private RegistrationDTO invoice;
 
     @BeforeEach
     public void setUp() {
         accountService = new AccountService(accountRepository, passwordEncoder, authenticationService, accountMapper);
-        invoice = new RegistrationInvoice("test", "test@example.com", "testQwerty");
+        invoice = new RegistrationDTO("test", "test@example.com", "testQwerty");
         invoice.setRole(AccountRole.ADMIN);
     }
 

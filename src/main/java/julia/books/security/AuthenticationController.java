@@ -26,7 +26,7 @@ public class AuthenticationController {
 
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Log in with username and password. Returns access and refresh tokens")
-    public ResponseEntity<Token> createAuthenticationToken(@RequestBody @ApiParam("Credentials") AuthenticationInvoice authenticationRequest) {
+    public ResponseEntity<Token> createAuthenticationToken(@RequestBody @ApiParam("Credentials") AuthenticationDTO authenticationRequest) {
         final var token = authenticationService.createAuthenticationToken(authenticationRequest.getUsername(),
                 authenticationRequest.getPassword());
         return createResponseWithCookie(token);

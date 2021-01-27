@@ -45,12 +45,12 @@ public class AuthenticationControllerTest {
     private Token token;
     private ObjectMapper objectMapper;
     private String authInvoiceJson;
-    private AuthenticationInvoice authInvoice;
+    private AuthenticationDTO authInvoice;
 
 
     @BeforeEach
     public void setUp() throws Exception {
-        authInvoice = new AuthenticationInvoice();
+        authInvoice = new AuthenticationDTO();
         authInvoice.setUsername("test");
         authInvoice.setPassword("test");
         objectMapper = new ObjectMapper();

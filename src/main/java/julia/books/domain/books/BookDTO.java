@@ -5,7 +5,7 @@ import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 
 @Data
-public class BookInvoice {
+public class BookDTO {
     private Long id;
     private @NotEmpty String title;
     private String author;

@@ -20,7 +20,7 @@ import java.util.UUID;
 
 @Service
 public class TokenService {
-    public static final int REFRESH_TOKEN_VALIDITY_DAYS = 60;
+    public static final int REFRESH_TOKEN_VALID = 60;
 
     private final RefreshTokensRepository refreshTokensRepository;
     private final AccountRepository accountRepository;
@@ -67,7 +67,7 @@ public class TokenService {
                 .signWith(secret)
                 .compact();
         final UUID uuid = UUID.randomUUID();
-        final var refreshToken = new RefreshToken(uuid, userId, issuedAt, REFRESH_TOKEN_VALIDITY_DAYS);
+        final var refreshToken = new RefreshToken(uuid, userId, issuedAt, REFRESH_TOKEN_VALID);
         refreshTokensRepository.save(refreshToken);
         return new Token(compact, uuid.toString());
     }

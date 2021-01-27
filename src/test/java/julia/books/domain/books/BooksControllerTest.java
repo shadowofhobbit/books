@@ -61,17 +61,17 @@ public class BooksControllerTest {
     @Test
     @WithMockUser
     public void addBook() throws JsonProcessingException {
-        var book = new Book();
+        var book = new BookDTO();
         book.setId(1L);
         book.setTitle("Война и мир");
         book.setAuthor("Толстой");
         book.setLanguage("Ru");
-        var bookInvoice = new BookInvoice();
-        bookInvoice.setTitle("Война и мир");
-        bookInvoice.setAuthor("Толстой");
-        bookInvoice.setLanguage("Ru");
-        String json = objectMapper.writeValueAsString(bookInvoice);
-        when(booksService.create(bookInvoice)).thenReturn(book);
+        var bookDTO = new BookDTO();
+        bookDTO.setTitle("Война и мир");
+        bookDTO.setAuthor("Толстой");
+        bookDTO.setLanguage("Ru");
+        String json = objectMapper.writeValueAsString(bookDTO);
+        when(booksService.create(bookDTO)).thenReturn(book);
         var post = MockMvcRequestBuilders.post("/books/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json);
@@ -89,12 +89,12 @@ public class BooksControllerTest {
     @Test
     public void addBookUnauthorized() throws Exception {
         when(booksService.create(any()))
-                .thenReturn(new Book());
-        var bookInvoice = new BookInvoice();
-        bookInvoice.setTitle("Война и мир");
-        bookInvoice.setAuthor("Толстой");
-        bookInvoice.setLanguage("Ru");
-        String json = objectMapper.writeValueAsString(bookInvoice);
+                .thenReturn(new BookDTO());
+        var bookDTO = new BookDTO();
+        bookDTO.setTitle("Война и мир");
+        bookDTO.setAuthor("Толстой");
+        bookDTO.setLanguage("Ru");
+        String json = objectMapper.writeValueAsString(bookDTO);
         var post = MockMvcRequestBuilders.post("/books/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json);
@@ -105,12 +105,12 @@ public class BooksControllerTest {
     @WithMockUser
     public void addBookWithoutTitle() throws JsonProcessingException {
         when(booksService.create(any()))
-                .thenReturn(new Book());
-        var bookInvoice = new BookInvoice();
-        bookInvoice.setTitle("");
-        bookInvoice.setAuthor("Толстой");
-        bookInvoice.setLanguage("Ru");
-        String json = objectMapper.writeValueAsString(bookInvoice);
+                .thenReturn(new BookDTO());
+        var bookDTO = new BookDTO();
+        bookDTO.setTitle("");
+        bookDTO.setAuthor("Толстой");
+        bookDTO.setLanguage("Ru");
+        String json = objectMapper.writeValueAsString(bookDTO);
         var post = MockMvcRequestBuilders.post("/books/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json);
@@ -150,7 +150,7 @@ public class BooksControllerTest {
 
     @Test
     public void getBook() throws Exception {
-        var book = new Book();
+        var book = new BookDTO();
         book.setId(1L);
         book.setTitle("1984");
         book.setAuthor("Оруэлл");
@@ -175,12 +175,12 @@ public class BooksControllerTest {
     @Test
     @WithMockUser
     public void updateBook() throws JsonProcessingException {
-        var bookInvoice = new BookInvoice();
-        bookInvoice.setId(1L);
-        bookInvoice.setTitle("Война и мир");
-        bookInvoice.setAuthor("Толстой");
-        bookInvoice.setLanguage("Ru");
-        String json = objectMapper.writeValueAsString(bookInvoice);
+        var bookDTO = new BookDTO();
+        bookDTO.setId(1L);
+        bookDTO.setTitle("Война и мир");
+        bookDTO.setAuthor("Толстой");
+        bookDTO.setLanguage("Ru");
+        String json = objectMapper.writeValueAsString(bookDTO);
         var put = MockMvcRequestBuilders.put("/books/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json);

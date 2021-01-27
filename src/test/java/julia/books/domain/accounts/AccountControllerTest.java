@@ -41,18 +41,18 @@ public class AccountControllerTest {
     private MockMvc mvc;
     private ObjectMapper objectMapper;
     private String invoiceJson;
-    private RegistrationInvoice registrationInvoice;
+    private RegistrationDTO registrationDTO;
 
     @BeforeEach
     public void setUp() {
-        registrationInvoice = new RegistrationInvoice("test", "test@example.com", "testtest");
+        registrationDTO = new RegistrationDTO("test", "test@example.com", "testtest");
         objectMapper = new ObjectMapper();
     }
 
     @Test
     public void registerUser() throws Exception {
-        registrationInvoice.setRole(AccountRole.USER);
-        invoiceJson = objectMapper.writeValueAsString(registrationInvoice);
+        registrationDTO.setRole(AccountRole.USER);
+        invoiceJson = objectMapper.writeValueAsString(registrationDTO);
         var token = new Token("header.payload.sig", "");
         when(accountService.registerUser(any())).thenReturn(token);
         MockHttpServletRequestBuilder request = post("/accounts/register")
@@ -68,8 +68,8 @@ public class AccountControllerTest {
     @Test
     @WithMockUser(roles = {"ADMIN"})
     public void createAdminWithAdminRole() throws Exception {
-        registrationInvoice.setRole(AccountRole.ADMIN);
-        invoiceJson = objectMapper.writeValueAsString(registrationInvoice);
+        registrationDTO.setRole(AccountRole.ADMIN);
+        invoiceJson = objectMapper.writeValueAsString(registrationDTO);
         var account = Account.builder()
                 .id(1)
                 .username("test")
@@ -97,8 +97,8 @@ public class AccountControllerTest {
     @Test
     @WithMockUser
     public void createAdminWithUserAuthority() throws Exception {
-        registrationInvoice.setRole(AccountRole.ADMIN);
-        invoiceJson = objectMapper.writeValueAsString(registrationInvoice);
+        registrationDTO.setRole(AccountRole.ADMIN);
+        invoiceJson = objectMapper.writeValueAsString(registrationDTO);
         var account = Account.builder()
                 .id(1)
                 .username("test")

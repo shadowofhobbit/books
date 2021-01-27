@@ -25,16 +25,16 @@ public class AccountController {
     @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation("Register")
-    public Token registerUser(@RequestBody @Valid @ApiParam("Account data") RegistrationInvoice registrationInvoice) {
-        return accountService.registerUser(registrationInvoice);
+    public Token registerUser(@RequestBody @Valid @ApiParam("Account data") RegistrationDTO registrationDTO) {
+        return accountService.registerUser(registrationDTO);
     }
 
     @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation("Create new account (requires ADMIN role)")
-    public Account register(@RequestBody @Valid @ApiParam("Account data") RegistrationInvoice registrationInvoice) {
-        return accountService.register(registrationInvoice);
+    public Account register(@RequestBody @Valid @ApiParam("Account data") RegistrationDTO registrationDTO) {
+        return accountService.register(registrationDTO);
     }
 
     @GetMapping("/current")

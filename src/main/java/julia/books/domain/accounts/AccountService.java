@@ -18,14 +18,14 @@ public class AccountService {
     private final AccountMapper accountMapper;
 
     @Transactional
-    public Token registerUser(RegistrationInvoice invoice) {
+    public Token registerUser(RegistrationDTO invoice) {
         invoice.setRole(AccountRole.USER);
         register(invoice);
         return authenticationService.createAuthenticationToken(invoice.getUsername(), invoice.getPassword());
     }
 
     @Transactional
-    public Account register(RegistrationInvoice invoice) {
+    public Account register(RegistrationDTO invoice) {
         if (accountRepository.findByUsername(invoice.getUsername()).isPresent()) {
             throw new IllegalArgumentException("Username taken");
         }

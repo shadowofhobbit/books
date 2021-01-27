@@ -38,7 +38,7 @@ public class AuthenticationServiceTest {
     @BeforeEach
     public void setUp() {
         authenticationService = new AuthenticationService(authenticationManager, tokenService, userDetailsService);
-        var authInvoice = new AuthenticationInvoice();
+        var authInvoice = new AuthenticationDTO();
         authInvoice.setUsername("test");
         authInvoice.setPassword("test");
         Token token = new Token("header.payload.sig", "gsyauwdgfwoudf");

@@ -13,24 +13,24 @@ public class BooksService {
     private final BooksRepository repository;
     private final BookMapper bookMapper;
 
-    public Book create(BookInvoice bookInvoice) {
+    public BookDTO create(BookDTO bookInvoice) {
         bookInvoice.setId(null);
         final BookEntity bookEntity = bookMapper.toEntity(bookInvoice);
         final var savedEntity = repository.save(bookEntity);
         return bookMapper.toDto(savedEntity);
     }
 
-    public SearchResult<Book> getBooks(int pageNumber, int size) {
-        final Page<Book> page = repository.findAll(PageRequest.of(pageNumber, size))
+    public SearchResult<BookDTO> getBooks(int pageNumber, int size) {
+        final Page<BookDTO> page = repository.findAll(PageRequest.of(pageNumber, size))
                 .map(bookMapper::toDto);
         return new SearchResult<>(page.getContent(), page.getNumber(), page.getSize(), page.getNumberOfElements());
     }
 
-    public Optional<Book> get(long id) {
+    public Optional<BookDTO> get(long id) {
         return repository.findById(id).map(bookMapper::toDto);
     }
 
-    public void update(BookInvoice bookInvoice) {
+    public void update(BookDTO bookInvoice) {
         final BookEntity bookEntity = bookMapper.toEntity(bookInvoice);
         repository.save(bookEntity);
     }

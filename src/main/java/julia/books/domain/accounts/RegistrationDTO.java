@@ -7,7 +7,7 @@ import javax.validation.constraints.*;
 
 @Data
 @Valid
-class RegistrationInvoice {
+class RegistrationDTO {
     @NotEmpty
     private final String username;
     @NotEmpty

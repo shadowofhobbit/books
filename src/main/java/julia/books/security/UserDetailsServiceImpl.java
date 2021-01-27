@@ -28,6 +28,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     public static class CustomUser implements UserDetails {
+        private static final long serialVersionUID = 0L;
         private final Integer id;
         private final UserDetails user;
 

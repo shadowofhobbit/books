@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 @Mapper(componentModel = "spring")
 @Service
 public interface BookMapper {
-    Book toDto(BookEntity entity);
+    BookDTO toDto(BookEntity entity);
 
-    BookEntity toEntity(BookInvoice bookInvoice);
+    BookEntity toEntity(BookDTO bookDTO);
 }
