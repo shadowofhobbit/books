@@ -14,7 +14,8 @@ books:
     user: http://localhost:4200
     admin: http://localhost:4201
 logging:
-  path: ${BOOKS_LOGS_PATH:/Users/julia/logs/books}
+  file:
+    path: ${BOOKS_LOGS_PATH:/Users/julia/logs/books}
   level:
     org:
       springframework:

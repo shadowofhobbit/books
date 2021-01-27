@@ -4,16 +4,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import julia.books.security.TokenService;
 import julia.books.security.UserDetailsServiceImpl;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -25,13 +25,14 @@ import org.springframework.web.util.NestedServletException;
 import java.util.List;
 import java.util.Optional;
 
-import static junit.framework.TestCase.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @WebMvcTest(BooksController.class)
 public class BooksControllerTest {
     @Autowired
@@ -52,7 +53,7 @@ public class BooksControllerTest {
     @MockBean
     BooksService booksService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
@@ -85,7 +86,7 @@ public class BooksControllerTest {
         }
     }
 
-    @Test(expected = NestedServletException.class)
+    @Test
     public void addBookUnauthorized() throws Exception {
         when(booksService.create(any()))
                 .thenReturn(new Book());
@@ -97,7 +98,7 @@ public class BooksControllerTest {
         var post = MockMvcRequestBuilders.post("/books/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json);
-        mvc.perform(post);
+        assertThrows(NestedServletException.class, () -> mvc.perform(post));
     }
 
     @Test
@@ -199,10 +200,11 @@ public class BooksControllerTest {
         mvc.perform(deleteRequest).andExpect(status().isNoContent());
     }
 
-    @Test(expected = NestedServletException.class)
+    @Test
     @WithMockUser
-    public void deleteBookByNormalUser() throws Exception {
+    public void deleteBookByNormalUser() {
         var deleteRequest = MockMvcRequestBuilders.delete("/books/{id}", 1);
-        mvc.perform(deleteRequest);
+        assertThrows(NestedServletException.class,
+                () -> mvc.perform(deleteRequest));
     }
 }

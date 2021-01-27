@@ -1,23 +1,25 @@
 package julia.books.domain.accounts;
 
 import julia.books.security.AuthenticationService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 public class AccountServiceTest {
     @Mock
     private AccountRepository accountRepository;
@@ -31,7 +33,7 @@ public class AccountServiceTest {
     private AccountService accountService;
     private RegistrationInvoice invoice;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         accountService = new AccountService(accountRepository, passwordEncoder, authenticationService, accountMapper);
         invoice = new RegistrationInvoice("test", "test@example.com", "testQwerty");
@@ -49,21 +51,21 @@ public class AccountServiceTest {
         assertEquals(captor.getValue().getRole(), AccountRole.USER);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void registerUsernameExists() {
         var accountEntity = new AccountEntity();
         accountEntity.setUsername("test");
         when(accountRepository.findByUsername(anyString())).thenReturn(Optional.of(accountEntity));
         when(accountRepository.findByEmail(anyString())).thenReturn(Optional.empty());
-        accountService.registerUser(invoice);
+        assertThrows(RuntimeException.class, () -> accountService.registerUser(invoice));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void registerEmailExists() {
         var accountEntity = new AccountEntity();
         accountEntity.setUsername("test2");
         when(accountRepository.findByUsername(anyString())).thenReturn(Optional.of(accountEntity));
         when(accountRepository.findByEmail(anyString())).thenReturn(Optional.empty());
-        accountService.registerUser(invoice);
+        assertThrows(RuntimeException.class, () -> accountService.registerUser(invoice));
     }
 }

@@ -2,9 +2,9 @@ package julia.books.security;
 
 import julia.books.domain.accounts.AccountRepository;
 import julia.books.domain.accounts.AccountRole;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,12 +12,13 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 public class AuthenticationServiceTest {
     @MockBean
     @Qualifier("userDetailsServiceImpl")
@@ -34,7 +35,7 @@ public class AuthenticationServiceTest {
 
     private AuthenticationService authenticationService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         authenticationService = new AuthenticationService(authenticationManager, tokenService, userDetailsService);
         var authInvoice = new AuthenticationInvoice();
@@ -56,17 +57,19 @@ public class AuthenticationServiceTest {
         verify(tokenService).generateToken(user);
     }
 
-    @Test(expected = UsernameNotFoundException.class)
+    @Test
     public void createAuthenticationTokenUserNotFound() {
         when(userDetailsService.loadUserByUsername("test")).thenThrow(UsernameNotFoundException.class);
-        authenticationService.createAuthenticationToken("test", "test");
+        assertThrows(UsernameNotFoundException.class,
+                () -> authenticationService.createAuthenticationToken("test", "test"));
         verifyNoMoreInteractions(tokenService);
     }
 
-    @Test(expected = BadCredentialsException.class)
+    @Test
     public void createAuthenticationTokenWrongPassword() {
         when(authenticationManager.authenticate(any())).thenThrow(BadCredentialsException.class);
-        authenticationService.createAuthenticationToken("test", "test");
+        assertThrows(BadCredentialsException.class,
+                () -> authenticationService.createAuthenticationToken("test", "test"));
         verifyNoMoreInteractions(tokenService);
     }
 }

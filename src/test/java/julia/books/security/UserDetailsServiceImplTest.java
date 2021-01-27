@@ -3,38 +3,38 @@ package julia.books.security;
 import julia.books.domain.accounts.AccountEntity;
 import julia.books.domain.accounts.AccountRepository;
 import julia.books.domain.accounts.AccountRole;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 public class UserDetailsServiceImplTest {
     @Mock
     private AccountRepository accountRepository;
 
     private UserDetailsServiceImpl userDetailsService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         userDetailsService = new UserDetailsServiceImpl(accountRepository);
     }
 
-    @Test(expected = UsernameNotFoundException.class)
+    @Test
     public void loadUserByUsernameNoUser() {
         when(accountRepository.findByUsername(anyString())).thenReturn(Optional.empty());
-        userDetailsService.loadUserByUsername("test");
+        assertThrows(UsernameNotFoundException.class,
+                () -> userDetailsService.loadUserByUsername("test"));
     }
 
     @Test
