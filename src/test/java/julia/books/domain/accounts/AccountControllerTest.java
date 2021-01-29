@@ -1,6 +1,7 @@
 package julia.books.domain.accounts;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import julia.books.domain.reviews.ReviewsService;
 import julia.books.security.Token;
 import julia.books.security.TokenService;
 import julia.books.security.UserDetailsServiceImpl;
@@ -29,6 +30,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class AccountControllerTest {
     @MockBean
     AccountService accountService;
+
+    @MockBean
+    ReviewsService reviewsService;
 
     @MockBean
     @Qualifier("userDetailsServiceImpl")

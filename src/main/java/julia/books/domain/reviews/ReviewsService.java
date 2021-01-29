@@ -20,30 +20,30 @@ public class ReviewsService {
     private final ReviewsRepository reviewsRepository;
     private final BooksRepository booksRepository;
 
-    public Review add(ReviewInvoice reviewInvoice) {
-        var reviewEntity = mapper.toEntity(reviewInvoice);
-        reviewEntity.setReviewer(accountRepository.getOne(reviewInvoice.getReaderId()));
-        reviewEntity.setBook(booksRepository.getOne(reviewInvoice.getBookId()));
-        var savedReview = reviewsRepository.save(reviewEntity);
-        var review = mapper.toDto(savedReview);
+    public ReviewDTO add(ReviewDTO reviewDTO) {
+        final var reviewEntity = mapper.toEntity(reviewDTO);
+        reviewEntity.setReviewer(accountRepository.getOne(reviewDTO.getReaderId()));
+        reviewEntity.setBook(booksRepository.getOne(reviewDTO.getBookId()));
+        final var savedReview = reviewsRepository.save(reviewEntity);
+        final var review = mapper.toDto(savedReview);
         review.setReaderId(reviewEntity.getReviewer().getId());
         review.setBookId(reviewEntity.getBook().getId());
         return review;
     }
 
     @Transactional(readOnly = true)
-    public Review getById(long reviewId) {
-        var reviewEntity = reviewsRepository.findById(reviewId).orElseThrow();
-        var review = mapper.toDto(reviewEntity);
+    public ReviewDTO getById(long reviewId) {
+        final var reviewEntity = reviewsRepository.findById(reviewId).orElseThrow();
+        final var review = mapper.toDto(reviewEntity);
         review.setReaderId(reviewEntity.getReviewer().getId());
         review.setBookId(reviewEntity.getBook().getId());
         return review;
     }
 
     @Transactional(readOnly = true)
-    public SearchResult<Review> getReviewsForBook(long bookId, int page, int size) {
-        var pageRequest = PageRequest.of(page, size);
-        var reviews = reviewsRepository.findByBookId(bookId, pageRequest)
+    public SearchResult<ReviewDTO> getReviewsForBook(long bookId, int page, int size) {
+        final var pageRequest = PageRequest.of(page, size);
+        final var reviews = reviewsRepository.findByBookId(bookId, pageRequest)
                 .map(reviewEntity -> {
                     var review = mapper.toDto(reviewEntity);
                     review.setReaderId(reviewEntity.getReviewer().getId());
@@ -57,28 +57,44 @@ public class ReviewsService {
     }
 
 
-    public Review update(ReviewInvoice reviewInvoice) {
-        var reviewEntity = reviewsRepository.findById(reviewInvoice.getId()).orElseThrow();
-        reviewEntity.setRating(reviewInvoice.getRating());
-        reviewEntity.setTitle(reviewInvoice.getTitle());
-        reviewEntity.setContent(reviewInvoice.getContent());
-        var savedReview = reviewsRepository.save(reviewEntity);
-        var review = mapper.toDto(savedReview);
+    public ReviewDTO update(ReviewDTO reviewDTO) {
+        final var reviewEntity = reviewsRepository.findById(reviewDTO.getId()).orElseThrow();
+        reviewEntity.setRating(reviewDTO.getRating());
+        reviewEntity.setTitle(reviewDTO.getTitle());
+        reviewEntity.setContent(reviewDTO.getContent());
+        final var savedReview = reviewsRepository.save(reviewEntity);
+        final var review = mapper.toDto(savedReview);
         review.setReaderId(savedReview.getReviewer().getId());
         review.setBookId(savedReview.getBook().getId());
         return review;
     }
 
     public void delete(long reviewId, UserDetailsServiceImpl.CustomUser userDetails) {
-        var isAdmin = userDetails.getAuthorities()
+        final var isAdmin = userDetails.getAuthorities()
                 .stream()
-                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+                .anyMatch(grantedAuthority -> "ROLE_ADMIN".equals(grantedAuthority.getAuthority()));
         if (!isAdmin) {
-            var review = reviewsRepository.findById(reviewId).orElseThrow();
+            final var review = reviewsRepository.findById(reviewId).orElseThrow();
             if (!review.getReviewer().getId().equals(userDetails.getId())) {
                 throw new HttpClientErrorException(HttpStatus.FORBIDDEN);
             }
         }
         reviewsRepository.deleteById(reviewId);
+    }
+
+    @Transactional(readOnly = true)
+    public SearchResult<ReviewDTO> getReviewsByUserId(Integer userId, int page, int size) {
+        final var pageRequest = PageRequest.of(page, size);
+        final var reviews = reviewsRepository.findByReviewerId(userId, pageRequest)
+                .map(reviewEntity -> {
+                    final var review = mapper.toDto(reviewEntity);
+                    review.setReaderId(reviewEntity.getReviewer().getId());
+                    review.setBookId(reviewEntity.getBook().getId());
+                    return review;
+                });
+        return new SearchResult<>(reviews.getContent(),
+                reviews.getNumber(),
+                reviews.getSize(),
+                reviews.getTotalElements());
     }
 }

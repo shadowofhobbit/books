@@ -1,9 +1,11 @@
 package julia.books.domain.books;
 
+import julia.books.domain.reviews.ReviewEntity;
 import lombok.*;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity(name = "books")
 @Getter
@@ -23,4 +25,6 @@ public class BookEntity {
     private String description;
     private Integer year;
     private String language;
+    @OneToMany
+    private Set<ReviewEntity> reviews;
 }

@@ -1,9 +1,11 @@
 package julia.books.domain.accounts;
 
+import julia.books.domain.reviews.ReviewEntity;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Entity(name = "accounts")
 @Getter
@@ -24,5 +26,6 @@ public class AccountEntity {
     private AccountRole role;
     @Column(columnDefinition = "TEXT")
     private String description;
-
+    @OneToMany
+    private Set<ReviewEntity> reviews;
 }

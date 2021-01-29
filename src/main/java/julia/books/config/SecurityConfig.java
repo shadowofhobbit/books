@@ -58,6 +58,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/auth/authenticated",
                         "/books/**",
                         "/accounts/register",
+                        "/accounts/*/reviews",
                         "/actuator/health")
                 .permitAll()
                 .requestMatchers(

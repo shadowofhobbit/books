@@ -8,7 +8,7 @@ import javax.validation.constraints.NotEmpty;
 import java.time.Instant;
 
 @Data
-public class ReviewInvoice {
+public class ReviewDTO {
     private Long id;
     private long bookId;
     private int readerId;

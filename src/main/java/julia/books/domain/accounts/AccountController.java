@@ -3,6 +3,9 @@ package julia.books.domain.accounts;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import julia.books.domain.books.SearchResult;
+import julia.books.domain.reviews.ReviewDTO;
+import julia.books.domain.reviews.ReviewsService;
 import julia.books.security.Token;
 import julia.books.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +24,7 @@ import javax.validation.Valid;
 public class AccountController {
 
     private final AccountService accountService;
+    private final ReviewsService reviewsService;
 
     @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
@@ -49,6 +53,14 @@ public class AccountController {
     public Account update(@RequestBody @Valid @ApiParam("Account data") Account account, Authentication authentication) {
         final var userDetails = (UserDetailsServiceImpl.CustomUser)authentication.getPrincipal();
         return accountService.update(userDetails.getId(), account);
+    }
+
+    @GetMapping("/{userId}/reviews")
+    @ApiOperation("Get user's reviews")
+    public SearchResult<ReviewDTO> getReviewsByUser(@PathVariable Integer userId,
+                                                    @RequestParam @ApiParam(value = "Page number", required = true) int page,
+                                                    @RequestParam @ApiParam(value = "Page size", required = true) int size) {
+        return reviewsService.getReviewsByUserId(userId, page, size);
     }
 
 }
