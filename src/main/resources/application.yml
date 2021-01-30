@@ -6,6 +6,10 @@ spring:
   jpa:
     open-in-view: false
     show-sql: true
+    hibernate:
+      ddl-auto: none
+  liquibase:
+    change-log: classpath:db/changelog/dbchangelog.postgresql.sql
   redis:
     host: localhost
     port: 6379
