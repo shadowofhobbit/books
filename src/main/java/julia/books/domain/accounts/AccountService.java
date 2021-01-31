@@ -4,6 +4,7 @@ import julia.books.security.AuthenticationService;
 import julia.books.security.Token;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ public class AccountService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationService authenticationService;
     private final AccountMapper accountMapper;
+    private final RabbitTemplate rabbitTemplate;
 
     @Transactional
     public Token registerUser(RegistrationDTO invoice) {
@@ -41,6 +43,7 @@ public class AccountService {
                 .build();
         final AccountEntity savedEntity = accountRepository.save(accountEntity);
         log.info("Created account {}", savedEntity.getId());
+        rabbitTemplate.convertAndSend("registration", accountMapper.toShortDto(accountEntity));
         return accountMapper.toDto(savedEntity);
     }
 
