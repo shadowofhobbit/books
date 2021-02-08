@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -29,13 +30,15 @@ public class AccountServiceTest {
     private AuthenticationService authenticationService;
     @Mock
     private AccountMapper accountMapper;
+    @Mock
+    private RabbitTemplate rabbitTemplate;
 
     private AccountService accountService;
     private RegistrationDTO invoice;
 
     @BeforeEach
     public void setUp() {
-        accountService = new AccountService(accountRepository, passwordEncoder, authenticationService, accountMapper);
+        accountService = new AccountService(accountRepository, passwordEncoder, authenticationService, accountMapper, rabbitTemplate);
         invoice = new RegistrationDTO("test", "test@example.com", "testQwerty");
         invoice.setRole(AccountRole.ADMIN);
     }
