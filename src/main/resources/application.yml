@@ -7,10 +7,17 @@ spring:
     open-in-view: false
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
+  liquibase:
+    change-log: classpath:db/changelog/dbchangelog.postgresql.sql
   redis:
     host: localhost
     port: 6379
+  rabbitmq:
+    host: localhost
+    port: 5672
+    template:
+      exchange: books-exchange
 books:
   origin:
     user: http://localhost:4200
