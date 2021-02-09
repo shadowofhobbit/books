@@ -4,7 +4,7 @@
 CREATE TABLE "public"."accounts" ("id" INTEGER NOT NULL, "password_hash" VARCHAR NOT NULL, "username" VARCHAR NOT NULL, "role" VARCHAR NOT NULL, "email" VARCHAR NOT NULL, "description" TEXT, "confirmed_email" BOOLEAN, "birthday" date, CONSTRAINT "accounts_pkey" PRIMARY KEY ("id"));
 
 -- changeset julia:1612025669150-2
-CREATE TABLE "public"."books" ("id" INTEGER NOT NULL, "author" VARCHAR, "title" VARCHAR, "language" VARCHAR, "year" INTEGER, "description" TEXT, CONSTRAINT "book_pkey" PRIMARY KEY ("id"));
+CREATE TABLE "public"."books" ("id" BIGINT NOT NULL, "author" VARCHAR, "title" VARCHAR, "language" VARCHAR, "year" INTEGER, "description" TEXT, CONSTRAINT "book_pkey" PRIMARY KEY ("id"));
 
 -- changeset julia:1612025669150-3
 ALTER TABLE "public"."accounts" ADD CONSTRAINT "accounts_email_key" UNIQUE ("email");
