@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.time.Instant;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -21,35 +23,25 @@ public class ReviewsService {
     private final BooksRepository booksRepository;
 
     public ReviewDTO add(ReviewDTO reviewDTO) {
+        reviewDTO.setDate(Instant.now());
         final var reviewEntity = mapper.toEntity(reviewDTO);
         reviewEntity.setReviewer(accountRepository.getOne(reviewDTO.getReaderId()));
         reviewEntity.setBook(booksRepository.getOne(reviewDTO.getBookId()));
         final var savedReview = reviewsRepository.save(reviewEntity);
-        final var review = mapper.toDto(savedReview);
-        review.setReaderId(reviewEntity.getReviewer().getId());
-        review.setBookId(reviewEntity.getBook().getId());
-        return review;
+        return mapper.toDto(savedReview);
     }
 
     @Transactional(readOnly = true)
     public ReviewDTO getById(long reviewId) {
         final var reviewEntity = reviewsRepository.findById(reviewId).orElseThrow();
-        final var review = mapper.toDto(reviewEntity);
-        review.setReaderId(reviewEntity.getReviewer().getId());
-        review.setBookId(reviewEntity.getBook().getId());
-        return review;
+        return mapper.toDto(reviewEntity);
     }
 
     @Transactional(readOnly = true)
     public SearchResult<ReviewDTO> getReviewsForBook(long bookId, int page, int size) {
         final var pageRequest = PageRequest.of(page, size);
         final var reviews = reviewsRepository.findByBookId(bookId, pageRequest)
-                .map(reviewEntity -> {
-                    var review = mapper.toDto(reviewEntity);
-                    review.setReaderId(reviewEntity.getReviewer().getId());
-                    review.setBookId(reviewEntity.getBook().getId());
-                    return review;
-                });
+                .map(mapper::toDto);
         return new SearchResult<>(reviews.getContent(),
                 reviews.getNumber(),
                 reviews.getSize(),
@@ -63,10 +55,7 @@ public class ReviewsService {
         reviewEntity.setTitle(reviewDTO.getTitle());
         reviewEntity.setContent(reviewDTO.getContent());
         final var savedReview = reviewsRepository.save(reviewEntity);
-        final var review = mapper.toDto(savedReview);
-        review.setReaderId(savedReview.getReviewer().getId());
-        review.setBookId(savedReview.getBook().getId());
-        return review;
+        return mapper.toDto(savedReview);
     }
 
     public void delete(long reviewId, UserDetailsServiceImpl.CustomUser userDetails) {
@@ -86,12 +75,7 @@ public class ReviewsService {
     public SearchResult<ReviewDTO> getReviewsByUserId(Integer userId, int page, int size) {
         final var pageRequest = PageRequest.of(page, size);
         final var reviews = reviewsRepository.findByReviewerId(userId, pageRequest)
-                .map(reviewEntity -> {
-                    final var review = mapper.toDto(reviewEntity);
-                    review.setReaderId(reviewEntity.getReviewer().getId());
-                    review.setBookId(reviewEntity.getBook().getId());
-                    return review;
-                });
+                .map(mapper::toDto);
         return new SearchResult<>(reviews.getContent(),
                 reviews.getNumber(),
                 reviews.getSize(),
