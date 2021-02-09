@@ -26,6 +26,6 @@ public class AccountEntity {
     private AccountRole role;
     @Column(columnDefinition = "TEXT")
     private String description;
-    @OneToMany
+    @OneToMany(mappedBy = "reviewer")
     private Set<ReviewEntity> reviews;
 }

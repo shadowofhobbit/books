@@ -25,6 +25,6 @@ public class BookEntity {
     private String description;
     private Integer year;
     private String language;
-    @OneToMany
+    @OneToMany(mappedBy = "book")
     private Set<ReviewEntity> reviews;
 }
