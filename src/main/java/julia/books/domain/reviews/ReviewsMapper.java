@@ -6,7 +6,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface ReviewsMapper {
     @Mapping(target = "bookId", source = "book.id")
-    @Mapping(target = "readerId", source = "reviewer.id")
+    @Mapping(target = "reviewerId", source = "reviewer.id")
     ReviewDTO toDto(ReviewEntity reviewEntity);
     ReviewEntity toEntity(ReviewDTO reviewDTO);
 }

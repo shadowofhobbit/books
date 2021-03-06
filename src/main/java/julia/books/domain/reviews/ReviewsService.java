@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.Instant;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,16 +26,16 @@ public class ReviewsService {
     public ReviewDTO add(ReviewDTO reviewDTO) {
         reviewDTO.setDate(Instant.now());
         final var reviewEntity = mapper.toEntity(reviewDTO);
-        reviewEntity.setReviewer(accountRepository.getOne(reviewDTO.getReaderId()));
+        reviewEntity.setReviewer(accountRepository.getOne(reviewDTO.getReviewerId()));
         reviewEntity.setBook(booksRepository.getOne(reviewDTO.getBookId()));
         final var savedReview = reviewsRepository.save(reviewEntity);
         return mapper.toDto(savedReview);
     }
 
     @Transactional(readOnly = true)
-    public ReviewDTO getById(long reviewId) {
-        final var reviewEntity = reviewsRepository.findById(reviewId).orElseThrow();
-        return mapper.toDto(reviewEntity);
+    public Optional<ReviewDTO> getById(long reviewId) {
+        final var reviewEntity = reviewsRepository.findById(reviewId);
+        return reviewEntity.map(mapper::toDto);
     }
 
     @Transactional(readOnly = true)

@@ -11,7 +11,7 @@ import java.time.Instant;
 public class ReviewDTO {
     private Long id;
     private long bookId;
-    private int readerId;
+    private int reviewerId;
     @Min(1)
     @Max(10)
     private int rating;

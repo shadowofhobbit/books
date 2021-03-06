@@ -8,8 +8,10 @@ import julia.books.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -27,15 +29,15 @@ public class ReviewsController {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation("Create a review (requires USER role)")
     public ReviewDTO create(@RequestBody @Valid @ApiParam("Review data") ReviewDTO reviewDTO,
-                         @PathVariable @ApiParam("Book id") long bookId,
-                         Authentication authentication) {
+                         @PathVariable @ApiParam("Book id") long bookId) {
         reviewDTO.setBookId(bookId);
-        final Integer userId = getId(authentication);
-        reviewDTO.setReaderId(userId);
+        final Integer userId = getId();
+        reviewDTO.setReviewerId(userId);
         return reviewsService.add(reviewDTO);
     }
 
-    private Integer getId(Authentication authentication) {
+    private Integer getId() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
         final var userDetails = (UserDetailsServiceImpl.CustomUser)authentication.getPrincipal();
         final var userId = userDetails.getId();
         log.info("User id: {}", userId);
@@ -44,20 +46,20 @@ public class ReviewsController {
 
     @GetMapping("/{reviewId}")
     @ApiOperation("Get review by id")
-    public ReviewDTO get(@PathVariable @ApiParam("Review id") long reviewId) {
-        return reviewsService.getById(reviewId);
+    public ResponseEntity<ReviewDTO> get(@PathVariable @ApiParam("Review id") long reviewId) {
+        return ResponseEntity.of(reviewsService.getById(reviewId));
     }
 
     @GetMapping
     @ApiOperation("Get reviews for book")
-    public SearchResult<ReviewDTO> getAllForBook(@PathVariable long bookId,
-                                              @RequestParam @ApiParam("Page number") int page,
-                                              @RequestParam @ApiParam("Page size") int size) {
+    public SearchResult<ReviewDTO> getReviewsForBook(@PathVariable long bookId,
+                                                     @RequestParam @ApiParam("Page number") int page,
+                                                     @RequestParam @ApiParam("Page size") int size) {
         return reviewsService.getReviewsForBook(bookId, page, size);
     }
 
     @PutMapping("/{reviewId}")
-    @PreAuthorize("hasRole('USER') && (#this.this.getId(authentication).equals(#reviewDTO.getReaderId()))")
+    @PreAuthorize("hasRole('USER') && (#this.this.getId().equals(#reviewDTO.reviewerId()))")
     @ApiOperation("Update review")
     public ReviewDTO update(@RequestBody @Valid ReviewDTO reviewDTO,
                          @PathVariable @ApiParam("Book id") long bookId,
