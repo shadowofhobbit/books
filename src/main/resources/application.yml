@@ -10,6 +10,15 @@ spring:
       ddl-auto: none
   liquibase:
     change-log: classpath:db/changelog/dbchangelog.postgresql.sql
+  mail:
+    protocol: smtps
+    host: ${BOOKS_MAIL_HOST}
+    username: ${BOOKS_MAIL_USERNAME}
+    password: ${BOOKS_MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
   redis:
     host: localhost
     port: 6379
@@ -22,6 +31,8 @@ books:
   origin:
     user: http://localhost:4200
     admin: http://localhost:4201
+  email:
+    from: ${BOOKS_MAIL_FROM}
 logging:
   file:
     path: ${BOOKS_LOGS_PATH:/Users/julia/logs/books}
