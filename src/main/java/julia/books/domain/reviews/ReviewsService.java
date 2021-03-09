@@ -7,6 +7,7 @@ import julia.books.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
@@ -52,6 +53,9 @@ public class ReviewsService {
 
     public ReviewDTO update(ReviewDTO reviewDTO) {
         final var reviewEntity = reviewsRepository.findById(reviewDTO.getId()).orElseThrow();
+        if (reviewEntity.getReviewer().getId() != reviewDTO.getReviewerId()) {
+            throw new AccessDeniedException("Cannot update reviews by other people");
+        }
         reviewEntity.setRating(reviewDTO.getRating());
         reviewEntity.setTitle(reviewDTO.getTitle());
         reviewEntity.setContent(reviewDTO.getContent());

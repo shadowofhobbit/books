@@ -12,15 +12,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 
 @RestController
 @RequestMapping("/books/{bookId}/reviews")
 @RequiredArgsConstructor
 @Log4j2
 @Api(tags="Reviews")
+@Validated
 public class ReviewsController {
     private final ReviewsService reviewsService;
 
@@ -36,7 +39,7 @@ public class ReviewsController {
         return reviewsService.add(reviewDTO);
     }
 
-    private Integer getId() {
+    public Integer getId() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         final var userDetails = (UserDetailsServiceImpl.CustomUser)authentication.getPrincipal();
         final var userId = userDetails.getId();
@@ -53,13 +56,13 @@ public class ReviewsController {
     @GetMapping
     @ApiOperation("Get reviews for book")
     public SearchResult<ReviewDTO> getReviewsForBook(@PathVariable long bookId,
-                                                     @RequestParam @ApiParam("Page number") int page,
-                                                     @RequestParam @ApiParam("Page size") int size) {
+                                                     @RequestParam @ApiParam("Page number") @Min(0) int page,
+                                                     @RequestParam @ApiParam("Page size") @Min(0) int size) {
         return reviewsService.getReviewsForBook(bookId, page, size);
     }
 
     @PutMapping("/{reviewId}")
-    @PreAuthorize("hasRole('USER') && (#this.this.getId().equals(#reviewDTO.reviewerId()))")
+    @PreAuthorize("hasRole('USER') && (#this.this.getId().equals(#reviewDTO.getReviewerId()))")
     @ApiOperation("Update review")
     public ReviewDTO update(@RequestBody @Valid ReviewDTO reviewDTO,
                          @PathVariable @ApiParam("Book id") long bookId,
