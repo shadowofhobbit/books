@@ -40,7 +40,7 @@ public class ReviewsController {
     }
 
     public Integer getId() {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        final var authentication = SecurityContextHolder.getContext().getAuthentication();
         final var userDetails = (UserDetailsServiceImpl.CustomUser)authentication.getPrincipal();
         final var userId = userDetails.getId();
         log.info("User id: {}", userId);

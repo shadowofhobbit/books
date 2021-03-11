@@ -15,13 +15,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class WelcomeMailSender {
     @Value("${books.email.from}")
-    String from;
+    private String from;
 
     private final MailSender mailSender;
 
     @RabbitListener(queues = "new-accounts")
     public void sendEmail(Account account) {
-        var message = new SimpleMailMessage();
+        final var message = new SimpleMailMessage();
         message.setFrom(from);
         message.setTo(account.getEmail());
         message.setSubject("books-service registration");

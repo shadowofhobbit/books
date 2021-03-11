@@ -11,29 +11,28 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitConfig {
+    @Value("${spring.rabbitmq.template.exchange}")
+    private String topicExchangeName;
+
+    static final String NEW_ACCOUNTS_QUEUE = "new-accounts";
 
     @Bean
     public Jackson2JsonMessageConverter messageConverter() {
         return new Jackson2JsonMessageConverter();
     }
 
-    @Value("${spring.rabbitmq.template.exchange}")
-    private String topicExchangeName;
-
-    static final String queueName = "new-accounts";
-
     @Bean
-    Queue queue() {
-        return new Queue(queueName, true);
+    public Queue queue() {
+        return new Queue(NEW_ACCOUNTS_QUEUE, true);
     }
 
     @Bean
-    TopicExchange exchange() {
+    public TopicExchange exchange() {
         return new TopicExchange(topicExchangeName);
     }
 
     @Bean
-    Binding binding(Queue queue, TopicExchange exchange) {
+    public Binding binding(Queue queue, TopicExchange exchange) {
         return BindingBuilder.bind(queue).to(exchange).with("registration");
     }
 
