@@ -25,3 +25,12 @@ CREATE SEQUENCE  IF NOT EXISTS "public"."hibernate_sequence" AS bigint START WIT
 CREATE TABLE reviews (id BIGINT NOT NULL PRIMARY KEY, content TEXT, date TIMESTAMP,
   rating INTEGER NOT NULL CHECK (rating>=1 AND rating<=10), title VARCHAR(255), book_id BIGINT REFERENCES books(id),
   reviewer_id INTEGER REFERENCES accounts(id));
+
+-- changeset julia:9
+CREATE TABLE quotes
+(
+    id          BIGINT NOT NULL PRIMARY KEY,
+    content     TEXT,
+    book_id     BIGINT REFERENCES books (id),
+    reader_id INTEGER REFERENCES accounts (id)
+);

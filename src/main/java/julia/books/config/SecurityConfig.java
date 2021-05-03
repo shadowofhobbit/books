@@ -57,7 +57,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/auth/refresh",
                         "/auth/authenticated",
                         "/books/**",
+                        "/quotes/**",
                         "/accounts/register",
+                        "/accounts/*/quotes",
                         "/accounts/*/reviews",
                         "/actuator/health")
                 .permitAll()
