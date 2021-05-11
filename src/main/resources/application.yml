@@ -33,6 +33,10 @@ books:
     admin: http://localhost:4201
   email:
     from: ${BOOKS_MAIL_FROM}
+  bot:
+    url: https://test-quotes-bot.herokuapp.com
+    username: ${BOT_USERNAME}
+    password: ${BOT_PASSWORD}
 logging:
   file:
     path: ${BOOKS_LOGS_PATH:/Users/julia/logs/books}

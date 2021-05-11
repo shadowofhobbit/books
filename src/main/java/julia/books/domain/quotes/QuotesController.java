@@ -85,4 +85,11 @@ public class QuotesController {
         final var userDetails = (UserDetailsServiceImpl.CustomUser)authentication.getPrincipal();
         quotesService.delete(quoteId, userDetails);
     }
+
+    @PutMapping("/quotes/{quoteId}/publish")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ApiOperation("Publish quote in Telegram bot")
+    public void publishInTelegramBot(@PathVariable @ApiParam("Quote id") long quoteId) {
+        quotesService.publishInTelegramBot(quoteId);
+    }
 }

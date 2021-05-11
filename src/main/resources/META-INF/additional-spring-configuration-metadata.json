@@ -9,5 +9,20 @@
       "name": "books.origin.admin",
       "type": "java.lang.String",
       "description": "Books admin url."
+    },
+    {
+      "name": "books.bot.url",
+      "type": "java.lang.String",
+      "description": "Telegram Quotes bot url."
+    },
+    {
+      "name": "books.bot.username",
+      "type": "java.lang.String",
+      "description": "Telegram Quotes bot username."
+    },
+    {
+      "name": "books.bot.password",
+      "type": "java.lang.String",
+      "description": "Telegram Quotes bot password."
     }
   ] }
