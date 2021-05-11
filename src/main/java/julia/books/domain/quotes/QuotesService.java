@@ -39,11 +39,11 @@ public class QuotesService {
     private final QuotesRepository quotesRepository;
     private final BooksRepository booksRepository;
     @Value("${books.bot.url}")
-    private String BOT_BASE_URL;
+    private String botBaseUrl;
     @Value("${books.bot.username}")
-    private String BOT_USERNAME;
+    private String botUsername;
     @Value("${books.bot.password}")
-    private String BOT_PASSWORD;
+    private String botPassword;
 
     public QuoteDTO add(QuoteDTO quoteDTO) {
         final var quoteEntity = mapper.toEntity(quoteDTO);
@@ -107,29 +107,30 @@ public class QuotesService {
 
     @Transactional(readOnly = true)
     public void publishInTelegramBot(long quoteId) {
-        var quote = quotesRepository.findById(quoteId).orElseThrow();
-        var httpClient = HttpClient.newHttpClient();
-        var uri = URI.create(BOT_BASE_URL + "/quotes");
-        var body = "{\"content\": \"" + quote.getContent() + "\", \"source\": \"" + quote.getBook().getAuthor() + "\"}";
-        var request = HttpRequest.newBuilder()
+        final var quote = quotesRepository.findById(quoteId).orElseThrow();
+        final var httpClient = HttpClient.newHttpClient();
+        final var uri = URI.create(botBaseUrl + "/quotes");
+        final var body = "{\"content\": \"" + quote.getContent() + "\", \"source\": \"" + quote.getBook().getAuthor() + "\"}";
+        final var request = HttpRequest.newBuilder()
                 .timeout(Duration.of(TIMEOUT, ChronoUnit.SECONDS))
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .uri(uri)
-                .headers(HttpHeaders.AUTHORIZATION, "Basic " + encodeBasicAuth(BOT_USERNAME, BOT_PASSWORD, null),
+                .headers(HttpHeaders.AUTHORIZATION, "Basic " + encodeBasicAuth(botUsername, botPassword, null),
                         HttpHeaders.CONTENT_TYPE, "application/json")
                 .build();
         try {
-            var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            var httpStatus = Objects.requireNonNull(HttpStatus.resolve(response.statusCode()));
+            final var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            final var httpStatus = Objects.requireNonNull(HttpStatus.resolve(response.statusCode()));
             if (httpStatus.is4xxClientError()) {
                 throw new IllegalArgumentException("Error publishing quote in bot");
             } else if (!httpStatus.is2xxSuccessful()) {
                 throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error publishing quote in bot");
             }
         } catch (IOException | InterruptedException e) {
-            log.error("Error sending quote to bot");
-            e.printStackTrace();
-            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error sending quote to bot");
+            log.error("Error sending quote to bot", e);
+            final var exception = new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Error sending quote to bot");
+            exception.initCause(e);
+            throw exception;
         }
     }
 }
