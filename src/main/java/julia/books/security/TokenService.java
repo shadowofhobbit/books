@@ -17,7 +17,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
-
+@SuppressWarnings("PMD.DefaultPackage")
 @Service
 public class TokenService {
     public static final int REFRESH_TOKEN_VALID = 60;

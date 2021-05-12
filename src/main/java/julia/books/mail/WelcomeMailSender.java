@@ -30,7 +30,7 @@ public class WelcomeMailSender {
             mailSender.send(message);
             log.info("Sent welcome email to {}", account.getId());
         } catch (MailException ex) {
-            log.error("Error sending welcome email to " + account.getId(), ex);
+            log.error(() -> "Error sending welcome email to " + account.getId(), ex);
         }
     }
 }

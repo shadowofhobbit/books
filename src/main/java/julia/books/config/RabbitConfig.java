@@ -14,7 +14,7 @@ public class RabbitConfig {
     @Value("${spring.rabbitmq.template.exchange}")
     private String topicExchangeName;
 
-    static final String NEW_ACCOUNTS_QUEUE = "new-accounts";
+    private static final String NEW_ACCOUNTS_QUEUE = "new-accounts";
 
     @Bean
     public Jackson2JsonMessageConverter messageConverter() {
