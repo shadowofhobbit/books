@@ -44,12 +44,18 @@ pipeline {
                 sh 'docker build -t shadowofhobbit/books-service .'
             }
         }
+        stage('Stop previous container') {
+            steps {
+                 sh 'docker stop $(docker ps --filter ancestor=shadowofhobbit/books-service -q)'
+            }
+        }
         stage('Run') {
             steps {
                 sh 'docker run --rm -p 8080:8080 -d \
           --env DATABASE_URL=jdbc:postgresql://host.docker.internal:5432/books --env DATABASE_USERNAME --env DATABASE_PASSWORD \
           --env BOOKS_MAIL_HOST --env BOOKS_MAIL_FROM --env BOOKS_MAIL_USERNAME --env BOOKS_MAIL_PASSWORD \
           --env BOT_USERNAME --env BOT_PASSWORD --env BOOKS_LOGS_PATH=/home/spring/app/logs \
+          --env spring.rabbitmq.host=host.docker.internal --env spring.redis.host=host.docker.internal \
           -v /Users/julia/logs/books:/home/spring/app/logs shadowofhobbit/books-service'
             }
         }
