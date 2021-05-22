@@ -46,6 +46,7 @@ logging:
         transaction:
           interceptor: TRACE
 
+management:
   endpoints:
     web:
       exposure:
