@@ -57,6 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/auth/refresh",
                         "/auth/authenticated",
                         "/books/**",
+                        "/news/**",
                         "/quotes/**",
                         "/accounts/register",
                         "/accounts/*/quotes",

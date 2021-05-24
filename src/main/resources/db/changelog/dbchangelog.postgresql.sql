@@ -34,3 +34,13 @@ CREATE TABLE quotes
     book_id     BIGINT REFERENCES books (id),
     reader_id INTEGER REFERENCES accounts (id)
 );
+
+-- changeset julia:10
+CREATE TABLE news
+(
+    id        BIGINT NOT NULL PRIMARY KEY,
+    title     VARCHAR(255),
+    content   TEXT,
+    date      TIMESTAMP,
+    author_id INTEGER REFERENCES accounts (id)
+);
