@@ -11,7 +11,7 @@ sourceCompatibility = '11'
 
 ext {
     jjwtVersion = "0.11.2"
-    swaggerVersion = "2.9.2"
+    swaggerVersion = "3.0.0"
 }
 
 configurations {
